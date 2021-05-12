@@ -1,0 +1,15 @@
+F:\RepresentativesTracking\DAL\bin\Debug\net5.0\DAL.deps.json
+F:\RepresentativesTracking\DAL\bin\Debug\net5.0\DAL.dll
+F:\RepresentativesTracking\DAL\bin\Debug\net5.0\ref\DAL.dll
+F:\RepresentativesTracking\DAL\bin\Debug\net5.0\DAL.pdb
+F:\RepresentativesTracking\DAL\bin\Debug\net5.0\Modle.dll
+F:\RepresentativesTracking\DAL\bin\Debug\net5.0\Modle.pdb
+F:\RepresentativesTracking\DAL\obj\Debug\net5.0\DAL.csprojAssemblyReference.cache
+F:\RepresentativesTracking\DAL\obj\Debug\net5.0\DAL.GeneratedMSBuildEditorConfig.editorconfig
+F:\RepresentativesTracking\DAL\obj\Debug\net5.0\DAL.AssemblyInfoInputs.cache
+F:\RepresentativesTracking\DAL\obj\Debug\net5.0\DAL.AssemblyInfo.cs
+F:\RepresentativesTracking\DAL\obj\Debug\net5.0\DAL.csproj.CoreCompileInputs.cache
+F:\RepresentativesTracking\DAL\obj\Debug\net5.0\DAL.csproj.CopyComplete
+F:\RepresentativesTracking\DAL\obj\Debug\net5.0\DAL.dll
+F:\RepresentativesTracking\DAL\obj\Debug\net5.0\ref\DAL.dll
+F:\RepresentativesTracking\DAL\obj\Debug\net5.0\DAL.pdb
