@@ -20,6 +20,7 @@ namespace DAL.Services
         {
             _db = context;
         }
+        public async Task<IEnumerable<RepresentativeLocation>> FindById() => await _db.Location.Include(x => x.Order).Include(x=>x.User).ToListAsync();
 
         public async Task<IEnumerable<RepresentativeLocation>> GetAllByOrder(int User,int Order)=> await _db.Location.Where(x=>x.UserID==User&&x.OrderID==Order).ToListAsync();
         public async Task<IEnumerable<RepresentativeLocation>> GetAllBetweenTwoDates(int User,DateTime Start, DateTime End) => await _db.Location.Where(x => x.UserID == User && x.LocationDate>= Start&&x.LocationDate<=End).ToListAsync();

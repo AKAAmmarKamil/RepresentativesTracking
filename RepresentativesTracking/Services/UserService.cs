@@ -16,6 +16,7 @@ namespace Services
         Task<bool> ChangeStatus(int Id, bool Status);
         Task<IEnumerable<User>> FindAll(int PageNumber, int Count);
         Task<IEnumerable<User>> GetUsersByCompany(int Id, int PageNumber, int Count);
+        Task<User> ModifyByAdmin(int id, User User);
     }
 
     public class UserService : IUserService
@@ -67,7 +68,7 @@ namespace Services
         public Task<User> GetUserByEmail(string Email) =>
         _repositoryWrapper.User.GetUserByEmail(Email);
 
-        public async Task<User> Modify(int id, User User)
+        public async Task<User> ModifyByAdmin(int id, User User)
         {
             var UserModelFromRepo = await _repositoryWrapper.User.FindById(id);
             if (UserModelFromRepo == null)
@@ -78,6 +79,19 @@ namespace Services
             UserModelFromRepo.Email = User.Email;
             UserModelFromRepo.PhoneNumber = User.PhoneNumber;
             UserModelFromRepo.Type = User.Type;
+            _repositoryWrapper.Save();
+            return User;
+        }
+        public async Task<User> Modify(int id, User User)
+        {
+            var UserModelFromRepo = await _repositoryWrapper.User.FindById(id);
+            if (UserModelFromRepo == null)
+            {
+                return null;
+            }
+            UserModelFromRepo.UserName = User.UserName;
+            UserModelFromRepo.Email = User.Email;
+            UserModelFromRepo.PhoneNumber = User.PhoneNumber;
             _repositoryWrapper.Save();
             return User;
         }

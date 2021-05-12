@@ -104,10 +104,14 @@ namespace Controllers
             else return BadRequest();
         }
         [HttpGet("{Id}", Name = "GetUserById")]
-       // [Authorize(Roles = UserRole.Admin + "," + UserRole.Student + "," + UserRole.Teacher)]
+        [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin + "," + UserRole.Representative)]
         public async Task<ActionResult<UserReadDto>> GetUserById(int Id)
         {
             var User = await _userService.FindById(Id);
+            if (GetClaim("Role") != "Admin" || (GetClaim("Role")!= "DeliveryAdmin" && GetClaim("CompanyID") != User.CompanyID.ToString())|| GetClaim("ID")!=User.ID.ToString())
+            {
+                return BadRequest(new { Error = "لا يمكن تعديل بيانات تخص هذا المستخدم من دون صلاحية المدير" });
+            }
             if (User == null)
             {
                 return NotFound();
@@ -124,7 +128,7 @@ namespace Controllers
             return Ok(UserModel);
         }
         [HttpGet("{PageNumber}/{Count}")]
-        [Authorize(Roles = UserRole.Admin)]
+        [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
         public async Task<ActionResult<UserReadDto>> GetUsersByCompany(int PageNumber, int Count)
         {
             var Users = _userService.GetUsersByCompany(Convert.ToInt32(GetClaim("CompanyID")),PageNumber, Count).Result.ToList();
@@ -132,8 +136,14 @@ namespace Controllers
             return Ok(UserModel);
         }
         [HttpPost]
+        [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
         public async Task<IActionResult> AddUser([FromBody] UserWriteDto UserWriteDto)
         {
+            if (GetClaim("Role") != "Admin" && UserWriteDto.CompanyId == null)
+            {
+                return BadRequest(new { Error = "معرف الشركة مطلوب" });
+            }
+            else UserWriteDto.CompanyId =Convert.ToInt32(GetClaim("CompanyId"));
             UserWriteDto.Password = BCrypt.Net.BCrypt.HashPassword(UserWriteDto.Password);
             var UserModel = _mapper.Map<User>(UserWriteDto);
             await _userService.Create(UserModel);
@@ -189,7 +199,7 @@ namespace Controllers
                 return NotFound();
             }
             var UserModel = _mapper.Map<User>(UserUpdateByAdminDto);
-            await _userService.Modify(Id, UserModel);
+            await _userService.ModifyByAdmin(Id, UserModel);
             return NoContent();
         }
         [HttpPut("{id}")]

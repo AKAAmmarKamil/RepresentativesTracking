@@ -13,7 +13,6 @@ using Modle.Model;
 namespace Controllers
 {
     [Route("api/[action]")]
-    [Authorize(Roles = UserRole.Admin)]
 
     [ApiController]
     public class LocationController : BaseController
@@ -29,11 +28,15 @@ namespace Controllers
             _userService = userService;
             _mapper = mapper;
         }
-
         [HttpGet("{Id}", Name = "GetLocationById")]
+        [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
         public async Task<ActionResult<LocationReadDto>> GetLocationById(int Id)
         {
             var result = await _locationService.FindById(Id);
+            if (GetClaim("Role") != "Admin" || (GetClaim("Role") != "DeliveryAdmin" && GetClaim("CompanyID") != result.User.CompanyID.ToString()))
+            {
+                return BadRequest(new { Error = "لا يمكن تعديل بيانات تخص هذا الطلب من دون صلاحية المدير" });
+            }
             if (result == null)
             {
                 return NotFound();
@@ -42,6 +45,7 @@ namespace Controllers
             return Ok(LocationModel);
         }
         [HttpGet]
+        [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
         public async Task<ActionResult<LocationReadDto>> GetAllByOrder()
         {
             var User = Convert.ToInt32(GetClaim("ID"));
@@ -51,6 +55,7 @@ namespace Controllers
             return Ok(LocationModel);
         }
         [HttpGet]
+        [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
         public async Task<ActionResult<LocationReadDto>> GetAllBetweenTwoDates(DateTime Start,DateTime End)
         {
             var User = Convert.ToInt32(GetClaim("ID"));
@@ -59,6 +64,7 @@ namespace Controllers
             return Ok(LocationModel);
         }
         [HttpPost]
+        [Authorize(Roles = UserRole.Admin + "," + UserRole.Representative)]
         public async Task<IActionResult> AddLocation([FromBody] LocationWriteDto LocationWriteDto)
         {
             var UserId = Convert.ToInt32(GetClaim("ID"));
@@ -72,6 +78,7 @@ namespace Controllers
             return CreatedAtRoute("GetLocationById", new { Id = LocationReadDto.ID }, LocationReadDto);
         }
         [HttpPost]
+        [Authorize(Roles = UserRole.Admin + "," + UserRole.Representative)]
         public async Task<IActionResult> AddLocationOffline([FromBody] List<LocationOfflineWriteDto> LocationOfflineWriteDto)
         {
             var UserId = Convert.ToInt32(GetClaim("ID"));
@@ -89,6 +96,7 @@ namespace Controllers
             return Ok(LocationReadDto);
         }
         [HttpDelete("{id}")]
+        [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> DeleteLocation(int Id)
         {
             var Location = await _locationService.Delete(Id);

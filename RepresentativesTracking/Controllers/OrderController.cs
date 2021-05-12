@@ -14,7 +14,6 @@ using System.Linq;
 namespace Controllers
 {
     [Route("api/[action]")]
-    //[Authorize(Roles = UserRole.Admin)]
 
     [ApiController]
     public class OrderController : BaseController
@@ -33,11 +32,15 @@ namespace Controllers
         }
 
         [HttpGet("{Id}", Name = "GetOrderById")]
+        [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
         public async Task<ActionResult<OrderReadDto>> GetOrderById(int Id)
         {
             var result = await _orderService.FindById(Id);
             var User = await _userService.FindById(result.UserID);
-            User.Company = await _companyService.FindById(User.CompanyID.Value);
+            if (GetClaim("Role") != "Admin" || (GetClaim("Role") != "DeliveryAdmin" && GetClaim("CompanyID") != User.CompanyID.ToString()) || GetClaim("ID") != User.ID.ToString())
+            {
+                return BadRequest(new { Error = "لا يمكن تعديل بيانات تخص هذا الطلب من دون صلاحية المدير" });
+            }
             var UserReadDto = _mapper.Map<UserReadDto>(User);
             if (result == null)
             {
@@ -48,6 +51,7 @@ namespace Controllers
             return Ok(OrderModel);
         }
         [HttpGet]
+        [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin+","+UserRole.Representative)]
         public async Task<ActionResult<OrderReadDto>> GetOrderByUser(int PageNumber,int Count)
         {
             var result = _orderService.GetOrderByUser(Convert.ToInt32(GetClaim("ID")),PageNumber,Count).Result.ToList();
@@ -65,6 +69,7 @@ namespace Controllers
             return Ok(OrderModel);
         }
         [HttpGet]
+        [Authorize(Roles = UserRole.Admin)]
         public async Task<ActionResult<OrderReadDto>> GetAllOrders()
         {
             var result = _orderService.GetAll().Result.ToList();
@@ -74,7 +79,6 @@ namespace Controllers
             for (int i = 0; i < result.Count; i++)
             {
                 User = await _userService.FindById(result[i].UserID);
-                User.Company = await _companyService.FindById(User.CompanyID.Value);
                 UserReadDto = _mapper.Map<UserReadDto>(User);
                 OrderModel = _mapper.Map<List<OrderReadDto>>(result);
                 OrderModel[i].User = UserReadDto;
@@ -82,19 +86,28 @@ namespace Controllers
             return Ok(OrderModel);
         }
         [HttpPost]
+        [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
         public async Task<IActionResult> AddOrder([FromBody] OrderWriteDto OrderWriteDto)
         {
             var OrderModel = _mapper.Map<Order>(OrderWriteDto);
             var Order=await _orderService.Create(OrderModel);
             var User = await _userService.FindById(Order.UserID);
+            if (GetClaim("Role") == "DeliveryAdmin" && GetClaim("CompanyID") != User.CompanyID.ToString())
+                return BadRequest(new {Error="لا يمكنك إضافة طلب لمندوب من شركة أخرى" });
             var UserReadDto = _mapper.Map<UserReadDto>(User);
             var OrderReadDto = _mapper.Map<OrderReadDto>(OrderModel);
             OrderReadDto.User = UserReadDto;
             return CreatedAtRoute("GetOrderById", new { Id = OrderReadDto.ID }, OrderReadDto);
         }
         [HttpPut("{id}")]
+        [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
         public async Task<IActionResult> UpdateOrder(int Id, [FromBody] OrderWriteDto OrderWriteDto)
         {
+            var User = await _userService.FindById(OrderWriteDto.UserID);
+            if (GetClaim("Role") == "DeliveryAdmin" && GetClaim("CompanyID") != User.CompanyID.ToString())
+            {
+                return BadRequest(new { Error = "لا يمكنك تعديل طلب لمندوب من شركة أخرى" });
+            }
             var OrderModelFromRepo = await _orderService.FindById(Id);
             if (OrderModelFromRepo == null)
             {
@@ -105,9 +118,14 @@ namespace Controllers
             return NoContent();
         }
         [HttpPut("{id}")]
+        [Authorize(Roles = UserRole.Admin + "," + UserRole.Representative)]
         public async Task<IActionResult> StartOrder(int Id, [FromBody] OrderStartDto OrderStartDto)
         {
             var Order =await _orderService.FindById(Id);
+            if (GetClaim("Role") == "Representative" && GetClaim("CompanyID") != Order.User.CompanyID.ToString())
+            {
+                return BadRequest(new { Error = "لا يمكنك إختيار طلب تابع لشركة أخرى" });
+            }
             if (Order.ISInProgress==false||Order.ReceiptImageUrl!=null)
             {
                 return BadRequest(new { Error = "لا يمكن إختيار طلب تم تسليمه مسبقاً" });
@@ -127,9 +145,14 @@ namespace Controllers
             return NoContent();
         }
         [HttpPut("{id}")]
+        [Authorize(Roles = UserRole.Admin  + "," + UserRole.Representative)]
         public async Task<IActionResult> EndOrder(int Id, [FromBody] OrderEndDto OrderEndDto)
         {
             var OrderModelFromRepo = await _orderService.FindById(Id);
+            if (GetClaim("Role") == "Representative" && GetClaim("CompanyID") != OrderModelFromRepo.User.CompanyID.ToString())
+            {
+                return BadRequest(new { Error = "لا يمكنك إختيار طلب تابع لشركة أخرى" });
+            }
             OrderModelFromRepo.User = await _userService.FindById(OrderModelFromRepo.UserID);
             if (OrderModelFromRepo == null)
             {
@@ -140,6 +163,7 @@ namespace Controllers
             return NoContent();
         }
         [HttpDelete("{id}")]
+        [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> DeleteOrder(int Id)
         {
             var Order = await _orderService.Delete(Id);
