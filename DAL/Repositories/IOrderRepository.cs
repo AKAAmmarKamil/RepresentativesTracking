@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using System.Linq;
+using System;
 
 namespace DAL.Services
 {
@@ -12,6 +13,8 @@ namespace DAL.Services
     {
         Task<IEnumerable<Order>> GetAll();
         Task<IEnumerable<Order>> GetOrderByUser(int User,int PageNumber,int Count);
+        Task<Order> GetOrderInProgress(int User);
+        Task<bool> IsLastOrderCompleted(int User);
 
     }
     public class OrderRepository : BaseRepository<Order>, IOrderRepository
@@ -23,6 +26,17 @@ namespace DAL.Services
         }
 
         public async Task<IEnumerable<Order>> GetAll()=> await _db.Order.ToListAsync();
-        public async Task<IEnumerable<Order>> GetOrderByUser(int User, int PageNumber, int Count) => await _db.Order.Where(x=>x.UserID==User && x.ReceiptImageUrl==null).Skip((PageNumber - 1) * Count).Take(Count).OrderBy(x=>x.AddOrderDate).ToListAsync();
+        public async Task<IEnumerable<Order>> GetOrderByUser(int User, int PageNumber, int Count) => await _db.Order.Where(x => x.UserID == User && x.ISInProgress == false && x.ReceiptImageUrl == null).Skip((PageNumber - 1) * Count).Take(Count).OrderBy(x=>x.AddOrderDate).ToListAsync();
+
+        public async Task<Order> GetOrderInProgress(int User) => await _db.Order.Where(x => x.UserID == User && x.ISInProgress == true).FirstOrDefaultAsync();
+
+        public async Task<bool> IsLastOrderCompleted(int User)
+        {
+          var Result=  await _db.Order.Where(x => x.UserID == User && x.ISInProgress == true && x.ReceiptImageUrl == null).ToListAsync();
+            if (Result.Count > 0)
+                return false;
+            return true;
+        }
+
     }
 }

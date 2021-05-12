@@ -31,12 +31,12 @@ namespace Services
 
         public async Task<Company> Modify(int id, Company Company)
         {
-            var CountryModelFromRepo = await _repositoryWrapper.Company.FindById(id);
-            if (CountryModelFromRepo == null)
+            var CompanyModelFromRepo = await _repositoryWrapper.Company.FindById(id);
+            if (CompanyModelFromRepo == null)
             {
                 return null;
             }
-            CountryModelFromRepo.Name = Company.Name;
+            CompanyModelFromRepo.Name = Company.Name;
             _repositoryWrapper.Save();
             return Company;
         }

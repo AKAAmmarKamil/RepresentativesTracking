@@ -1,12 +1,11 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 namespace Dto
 {
-    public class OrderStartDto 
+    public class LocationWriteDto
     {
         [Required(ErrorMessage = "لا يمكنك ترك هذا الحقل فارغاً")]
-        public double StartLongitude { get; set; }
+        public double Longitude { get; set; }
         [Required(ErrorMessage = "لا يمكنك ترك هذا الحقل فارغاً")]
-        public double StartLatitude { get; set; }
+        public double Latitude { get; set; }
     }
 }

@@ -26,49 +26,49 @@ namespace Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("{Id}", Name = "GetCountryById")]
-        public async Task<ActionResult<CompanyWriteDto>> GetCompanyById(int Id)
+        [HttpGet("{Id}", Name = "GetCompanyById")]
+        public async Task<ActionResult<CompanyReadDto>> GetCompanyById(int Id)
         {
             var result = await _companyService.FindById(Id);
             if (result == null)
             {
                 return NotFound();
             }
-            var CountryModel = _mapper.Map<CompanyWriteDto>(result);
-            return Ok(CountryModel);
+            var CompanyModel = _mapper.Map<CompanyReadDto>(result);
+            return Ok(CompanyModel);
         }
         [HttpGet]
         public async Task<ActionResult<CompanyReadDto>> GetAllCompanies()
         {
             var result = await _companyService.GetAll();
-            var CountryModel = _mapper.Map<IList<CompanyReadDto>>(result);
-            return Ok(CountryModel);
+            var CompanyModel = _mapper.Map<IList<CompanyReadDto>>(result);
+            return Ok(CompanyModel);
         }
         [HttpPost]
         public async Task<IActionResult> AddCompany([FromBody] CompanyWriteDto CompanyWriteDto)
         {
             var CompanyModel = _mapper.Map<Company>(CompanyWriteDto);
             await _companyService.Create(CompanyModel);
-            var CountryReadDto = _mapper.Map<CompanyReadDto>(CompanyModel);
-            return CreatedAtRoute("GetCountryById", new { Id = CountryReadDto.ID }, CountryReadDto);
+            var CompanyReadDto = _mapper.Map<CompanyReadDto>(CompanyModel);
+            return CreatedAtRoute("GetCompanyById", new { Id = CompanyReadDto.ID }, CompanyReadDto);
         }
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCompany(int Id, [FromBody] CompanyWriteDto CompanyWriteDto)
         {
-            var CountryModelFromRepo = await _companyService.FindById(Id);
-            if (CountryModelFromRepo == null)
+            var CompanyModelFromRepo = await _companyService.FindById(Id);
+            if (CompanyModelFromRepo == null)
             {
                 return NotFound();
             }
-            var CountryModel = _mapper.Map<Company>(CompanyWriteDto);
-            await _companyService.Modify(Id, CountryModel);
+            var CompanyModel = _mapper.Map<Company>(CompanyWriteDto);
+            await _companyService.Modify(Id, CompanyModel);
             return NoContent();
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCompany(int Id)
         {
-            var Country = await _companyService.Delete(Id);
-            if (Country == null)
+            var Company = await _companyService.Delete(Id);
+            if (Company == null)
             {
                 return NotFound();
             }

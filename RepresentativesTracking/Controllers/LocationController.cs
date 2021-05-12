@@ -1,0 +1,102 @@
+﻿using AutoMapper;
+using Dto;
+using Model;
+using Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using RepresentativesTracking;
+using Modle.Model;
+
+namespace Controllers
+{
+    [Route("api/[action]")]
+    [Authorize(Roles = UserRole.Admin)]
+
+    [ApiController]
+    public class LocationController : BaseController
+    {
+        private readonly ILocationService _locationService;
+        private readonly IUserService _userService;
+        private readonly IOrderService _orderService;
+        private readonly IMapper _mapper;
+        public LocationController(IMapper mapper, ILocationService locationService,IOrderService orderService,IUserService userService)
+        {
+            _locationService = locationService;
+            _orderService = orderService;
+            _userService = userService;
+            _mapper = mapper;
+        }
+
+        [HttpGet("{Id}", Name = "GetLocationById")]
+        public async Task<ActionResult<LocationReadDto>> GetLocationById(int Id)
+        {
+            var result = await _locationService.FindById(Id);
+            if (result == null)
+            {
+                return NotFound();
+            }
+            var LocationModel = _mapper.Map<LocationReadDto>(result);
+            return Ok(LocationModel);
+        }
+        [HttpGet]
+        public async Task<ActionResult<LocationReadDto>> GetAllByOrder()
+        {
+            var User = Convert.ToInt32(GetClaim("ID"));
+            var Order = _orderService.GetOrderInProgress(User).Result;
+            var result = await _locationService.GetAllByOrder(User,Order.ID);
+            var LocationModel = _mapper.Map<IList<LocationReadDto>>(result);
+            return Ok(LocationModel);
+        }
+        [HttpGet]
+        public async Task<ActionResult<LocationReadDto>> GetAllBetweenTwoDates(DateTime Start,DateTime End)
+        {
+            var User = Convert.ToInt32(GetClaim("ID"));
+            var result = await _locationService.GetAllBetweenTwoDates(User, Start,End);
+            var LocationModel = _mapper.Map<IList<LocationReadDto>>(result);
+            return Ok(LocationModel);
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddLocation([FromBody] LocationWriteDto LocationWriteDto)
+        {
+            var UserId = Convert.ToInt32(GetClaim("ID"));
+            var User =await _userService.FindById(UserId);
+            var Order = _orderService.GetOrderInProgress(UserId).Result;
+            var LocationModel = _mapper.Map<RepresentativeLocation>(LocationWriteDto);
+            LocationModel.User = User;
+            LocationModel.Order = Order;
+            await _locationService.Create(LocationModel);
+            var LocationReadDto = _mapper.Map<LocationReadDto>(LocationModel);
+            return CreatedAtRoute("GetLocationById", new { Id = LocationReadDto.ID }, LocationReadDto);
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddLocationOffline([FromBody] List<LocationOfflineWriteDto> LocationOfflineWriteDto)
+        {
+            var UserId = Convert.ToInt32(GetClaim("ID"));
+            var User = await _userService.FindById(UserId);
+            var Order = _orderService.GetOrderInProgress(UserId).Result;
+            var LocationModel = _mapper.Map<List<RepresentativeLocation>>(LocationOfflineWriteDto);
+            var LocationReadDto = new List<LocationReadDto>();
+            for (int i = 0; i < LocationModel.Count; i++)
+            {
+                LocationModel[i].User = User;
+                LocationModel[i].Order = Order;
+                await _locationService.Create(LocationModel[i]);
+                LocationReadDto = _mapper.Map<List<LocationReadDto>>(LocationModel);
+            }
+            return Ok(LocationReadDto);
+        }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteLocation(int Id)
+        {
+            var Location = await _locationService.Delete(Id);
+            if (Location == null)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
+    }
+}

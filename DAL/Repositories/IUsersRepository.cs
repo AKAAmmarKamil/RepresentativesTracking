@@ -49,7 +49,16 @@ namespace Repository
             return result;
         }
         public async Task<IEnumerable<User>> FindAll(int PageNumber,int Count) => await _db.User.Skip((PageNumber - 1) * Count).Take(Count).ToListAsync();
-
+        public async Task<User> FindById(int Id)
+        {
+            var result = await _db.User.Where(x => x.ID == Id).Include(x=>x.Company)
+                 .FirstOrDefaultAsync();
+            if (result == null)
+            {
+                return null;
+            }
+            return result;
+        }
     }
 
 }

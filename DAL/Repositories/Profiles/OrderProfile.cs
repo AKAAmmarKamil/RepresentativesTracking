@@ -12,13 +12,13 @@ namespace Profiles
             //Source -> Target
             CreateMap<Order, OrderReadDto>();
 
-            CreateMap<OrderWriteDto, Order>();
+            CreateMap<OrderWriteDto, Order>().ForMember(x => x.AddOrderDate, opt => opt.MapFrom(x => DateTime.Now));
             CreateMap<Order, OrderWriteDto>();
 
             CreateMap<OrderStartDto, Order>();
             CreateMap<Order, OrderStartDto>();
 
-            CreateMap<OrderEndDto, Order>().ForMember(x=>x.DeliveryOrderDate,opt=>opt.MapFrom(x=>DateTime.Now));
+            CreateMap<OrderEndDto, Order>();
             CreateMap<Order, OrderEndDto>();
         }
     }

@@ -52,6 +52,8 @@ namespace RepresentativesTracking
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddScoped<ICompanyService, CompanyService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ILocationService, LocationService>();
+            services.AddScoped<IOrderService,OrderService>();
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
         }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -10,7 +10,7 @@ namespace Profiles
         public UserProfile()
         {
             //Source -> Target
-            CreateMap<User, UserReadDto>();
+            CreateMap<User, UserReadDto>().ForMember(x=>x.CompanyName,opt=>opt.MapFrom(x=>x.Company.Name));
             CreateMap<UserWriteDto, User>();
             CreateMap<User, UserWriteDto>();
         }

@@ -8,6 +8,11 @@ namespace Services
     public interface IOrderService : IBaseService<Order, int>
     {
         Task<IEnumerable<Order>> GetAll();
+        Task<IEnumerable<Order>> GetOrderByUser(int User, int PageNumber, int Count);
+        Task<bool> IsLastOrderCompleted(int User);
+        Task<Order> StartModify(int id, Order Order);
+        Task<Order> EndModify(int id, Order Order);
+        Task<Order> GetOrderInProgress(int User);
     }
 
     public class OrderService : IOrderService
@@ -17,8 +22,10 @@ namespace Services
         {
             _repositoryWrapper = repositoryWrapper;
         }
-
-
+        public async Task<IEnumerable<Order>> GetOrderByUser(int User, int PageNumber, int Count) =>await 
+            _repositoryWrapper.Order.GetOrderByUser(User, PageNumber, Count);
+        public async Task<bool> IsLastOrderCompleted(int User) => await
+           _repositoryWrapper.Order.IsLastOrderCompleted(User);
         public async Task<Order> Create(Order Order) => await
              _repositoryWrapper.Order.Create(Order);
         public async Task<Order> Delete(int id) => await
@@ -26,26 +33,52 @@ namespace Services
 
         public async Task<Order> FindById(int id) => await
         _repositoryWrapper.Order.FindById(id);
-
+        public async Task<Order> GetOrderInProgress(int id) => await
+       _repositoryWrapper.Order.GetOrderInProgress(id);
         public async Task<IEnumerable<Order>> GetAll()=>await _repositoryWrapper.Order.GetAll();
         public Task<IEnumerable<Order>> All(int PageNumber, int Count) => _repositoryWrapper.Order.FindAll(PageNumber, Count);
-        public async Task<Order> Modify(int id, Order Order)
+        public async Task<Order> StartModify(int id, Order Order)
         {
-            var CountryModelFromRepo = await _repositoryWrapper.Order.FindById(id);
-            if (CountryModelFromRepo == null)
+            var OrderModelFromRepo = await _repositoryWrapper.Order.FindById(id);
+            if (OrderModelFromRepo == null)
             {
                 return null;
             }
-            CountryModelFromRepo.Details = Order.Details;
-            CountryModelFromRepo.StartLongitude = Order.StartLongitude;
-            CountryModelFromRepo.StartLatitude = Order.StartLatitude;
-            CountryModelFromRepo.ReceiptImageUrl = Order.ReceiptImageUrl;
-            CountryModelFromRepo.EndLongitude = Order.EndLatitude;
-            CountryModelFromRepo.EndLatitude = Order.EndLatitude;
-            CountryModelFromRepo.UserID = Order.UserID;
+            OrderModelFromRepo.StartLongitude = Order.StartLongitude;
+            OrderModelFromRepo.StartLatitude = Order.StartLatitude;
+            OrderModelFromRepo.ISInProgress = true;
             _repositoryWrapper.Save();
             return Order;
         }
-
+        public async Task<Order> EndModify(int id, Order Order)
+        {
+            var OrderModelFromRepo = await _repositoryWrapper.Order.FindById(id);
+            if (OrderModelFromRepo == null)
+            {
+                return null;
+            }
+            OrderModelFromRepo.ReceiptImageUrl = Order.ReceiptImageUrl;
+            OrderModelFromRepo.ISInProgress = false ;
+            OrderModelFromRepo.DeliveryOrderDate = DateTime.Now;
+            _repositoryWrapper.Save();
+            return Order;
+        }
+        public async Task<Order> Modify(int id, Order Order)
+        {
+            var OrderModelFromRepo = await _repositoryWrapper.Order.FindById(id);
+            if (OrderModelFromRepo == null)
+            {
+                return null;
+            }
+            OrderModelFromRepo.Details = Order.Details;
+            OrderModelFromRepo.StartLongitude = Order.StartLongitude;
+            OrderModelFromRepo.StartLatitude = Order.StartLatitude;
+            OrderModelFromRepo.ReceiptImageUrl = Order.ReceiptImageUrl;
+            OrderModelFromRepo.EndLongitude = Order.EndLatitude;
+            OrderModelFromRepo.EndLatitude = Order.EndLatitude;
+            OrderModelFromRepo.UserID = Order.UserID;
+            _repositoryWrapper.Save();
+            return Order;
+        }
     }
 }
