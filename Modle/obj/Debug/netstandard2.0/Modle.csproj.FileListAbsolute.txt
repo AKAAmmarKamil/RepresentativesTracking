@@ -1,0 +1,9 @@
+F:\RepresentativesTracking\Modle\bin\Debug\netstandard2.0\Modle.deps.json
+F:\RepresentativesTracking\Modle\bin\Debug\netstandard2.0\Modle.dll
+F:\RepresentativesTracking\Modle\bin\Debug\netstandard2.0\Modle.pdb
+F:\RepresentativesTracking\Modle\obj\Debug\netstandard2.0\Modle.csprojAssemblyReference.cache
+F:\RepresentativesTracking\Modle\obj\Debug\netstandard2.0\Modle.AssemblyInfoInputs.cache
+F:\RepresentativesTracking\Modle\obj\Debug\netstandard2.0\Modle.AssemblyInfo.cs
+F:\RepresentativesTracking\Modle\obj\Debug\netstandard2.0\Modle.csproj.CoreCompileInputs.cache
+F:\RepresentativesTracking\Modle\obj\Debug\netstandard2.0\Modle.dll
+F:\RepresentativesTracking\Modle\obj\Debug\netstandard2.0\Modle.pdb
