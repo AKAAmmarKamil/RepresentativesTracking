@@ -87,7 +87,7 @@ namespace Controllers
                 var claims = new[]
                 {
                    new Claim("Email", EmailForm.Email),
-                   new Claim("Code", Code.ToString()),
+                   new Claim("Code",BCrypt.Net.BCrypt.HashPassword(Code.ToString())),
                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                 };
                 var token = new JwtSecurityToken(claims: claims, expires: DateTime.UtcNow.AddMinutes(5),
@@ -143,7 +143,11 @@ namespace Controllers
             {
                 return BadRequest(new { Error = "معرف الشركة مطلوب" });
             }
-            else UserWriteDto.CompanyId =Convert.ToInt32(GetClaim("CompanyId"));
+            else
+            {
+                UserWriteDto.CompanyId = Convert.ToInt32(GetClaim("CompanyId"));
+                UserWriteDto.Role = GetClaim("Role");
+            }
             UserWriteDto.Password = BCrypt.Net.BCrypt.HashPassword(UserWriteDto.Password);
             var UserModel = _mapper.Map<User>(UserWriteDto);
             await _userService.Create(UserModel);
@@ -226,7 +230,7 @@ namespace Controllers
             var Code = GetClaim("Code");
             var Email = GetClaim("Email");
             var User = await _userService.GetUserByEmail(Email);
-            if (CodeForm.Code.ToString() == Code)
+            if (BCrypt.Net.BCrypt.HashPassword(CodeForm.Code.ToString()) == Code)
             {
                 await _userService.ChangeStatus(User.ID, true);
                 return Ok(new { Message = "تم تفعيل حساب المستخدم" });
