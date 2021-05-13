@@ -140,13 +140,11 @@ namespace Controllers
         public async Task<IActionResult> AddUser([FromBody] UserWriteDto UserWriteDto)
         {
             if (GetClaim("Role") != "Admin" && UserWriteDto.CompanyId == null)
-            {
                 return BadRequest(new { Error = "معرف الشركة مطلوب" });
-            }
-            else
+            if (GetClaim("Role") != "DeliveryAdmin")
             {
                 UserWriteDto.CompanyId = Convert.ToInt32(GetClaim("CompanyId"));
-                UserWriteDto.Role = GetClaim("Role");
+                UserWriteDto.Role = "Representative";
             }
             UserWriteDto.Password = BCrypt.Net.BCrypt.HashPassword(UserWriteDto.Password);
             var UserModel = _mapper.Map<User>(UserWriteDto);
