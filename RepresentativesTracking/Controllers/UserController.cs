@@ -87,7 +87,7 @@ namespace Controllers
                 var claims = new[]
                 {
                    new Claim("Email", EmailForm.Email),
-                   new Claim("Code",BCrypt.Net.BCrypt.HashPassword(Code.ToString())),
+                   new Claim("Code",Code.ToString()),
                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                 };
                 var token = new JwtSecurityToken(claims: claims, expires: DateTime.UtcNow.AddMinutes(5),
@@ -228,7 +228,7 @@ namespace Controllers
             var Code = GetClaim("Code");
             var Email = GetClaim("Email");
             var User = await _userService.GetUserByEmail(Email);
-            if (BCrypt.Net.BCrypt.HashPassword(CodeForm.Code.ToString()) == Code)
+            if (CodeForm.Code.ToString() == Code)
             {
                 await _userService.ChangeStatus(User.ID, true);
                 return Ok(new { Message = "تم تفعيل حساب المستخدم" });
