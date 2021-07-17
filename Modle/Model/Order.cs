@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
 namespace Modle.Model
 {
     public class Order
@@ -9,6 +8,9 @@ namespace Modle.Model
         [Key]
         public int ID { get; set; }
         public string Details { get; set; }
+        public int Count { get; set; }
+        public double? PriceInIQD { get; set; }
+        public double? PriceInUSD { get; set; }
         public DateTimeOffset AddOrderDate { get; set; }
         public DateTimeOffset? DeliveryOrderDate { get; set; }
         public double? StartLongitude { get; set; }

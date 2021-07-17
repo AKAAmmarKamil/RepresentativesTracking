@@ -71,6 +71,9 @@ namespace Services
                 return null;
             }
             OrderModelFromRepo.Details = Order.Details;
+            OrderModelFromRepo.Count = Order.Count;
+            OrderModelFromRepo.PriceInIQD = Order.PriceInIQD;
+            OrderModelFromRepo.PriceInUSD = Order.PriceInUSD;
             OrderModelFromRepo.StartLongitude = Order.StartLongitude;
             OrderModelFromRepo.StartLatitude = Order.StartLatitude;
             OrderModelFromRepo.ReceiptImageUrl = Order.ReceiptImageUrl;

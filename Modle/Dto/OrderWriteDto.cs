@@ -11,6 +11,10 @@ namespace Dto
         [Required(ErrorMessage = "لا يمكنك ترك هذا الحقل فارغاً")]
         public string Details { get; set; }
         [Required(ErrorMessage = "لا يمكنك ترك هذا الحقل فارغاً")]
+        public int Count { get; set; }
+        public double? PriceInIQD { get; set; }
+        public double? PriceInUSD { get; set; }
+        [Required(ErrorMessage = "لا يمكنك ترك هذا الحقل فارغاً")]
         public double EndLongitude { get; set; }
         [Required(ErrorMessage = "لا يمكنك ترك هذا الحقل فارغاً")]
         public double EndLatitude { get; set; }
