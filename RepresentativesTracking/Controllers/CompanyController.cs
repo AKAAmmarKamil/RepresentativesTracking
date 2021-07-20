@@ -1,15 +1,12 @@
 ﻿using AutoMapper;
 using Dto;
-using Model;
 using Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using RepresentativesTracking;
 using Modle.Model;
-
 namespace Controllers
 {
     [Route("api/[action]")]
@@ -25,7 +22,6 @@ namespace Controllers
             _companyService = companyService;
             _mapper = mapper;
         }
-
         [HttpGet("{Id}", Name = "GetCompanyById")]
         public async Task<ActionResult<CompanyReadDto>> GetCompanyById(int Id)
         {
@@ -53,14 +49,14 @@ namespace Controllers
             return CreatedAtRoute("GetCompanyById", new { Id = CompanyReadDto.ID }, CompanyReadDto);
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCompany(int Id, [FromBody] CompanyWriteDto CompanyWriteDto)
+        public async Task<IActionResult> UpdateCompany(int Id, [FromBody] CompanyUpdateDto CompanyUpdateDto)
         {
             var CompanyModelFromRepo = await _companyService.FindById(Id);
             if (CompanyModelFromRepo == null)
             {
                 return NotFound();
             }
-            var CompanyModel = _mapper.Map<Company>(CompanyWriteDto);
+            var CompanyModel = _mapper.Map<Company>(CompanyUpdateDto);
             await _companyService.Modify(Id, CompanyModel);
             return NoContent();
         }

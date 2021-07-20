@@ -53,12 +53,16 @@ namespace Modle.Migrations
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Details = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Count = table.Column<int>(type: "int", nullable: false),
+                    PriceInIQD = table.Column<double>(type: "float", nullable: true),
+                    PriceInUSD = table.Column<double>(type: "float", nullable: true),
                     AddOrderDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     DeliveryOrderDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     StartLongitude = table.Column<double>(type: "float", nullable: true),
                     StartLatitude = table.Column<double>(type: "float", nullable: true),
                     EndLongitude = table.Column<double>(type: "float", nullable: false),
                     EndLatitude = table.Column<double>(type: "float", nullable: false),
+                    ISInProgress = table.Column<bool>(type: "bit", nullable: false),
                     ReceiptImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserID = table.Column<int>(type: "int", nullable: false)
                 },

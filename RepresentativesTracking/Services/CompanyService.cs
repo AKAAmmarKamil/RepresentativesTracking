@@ -37,6 +37,7 @@ namespace Services
                 return null;
             }
             CompanyModelFromRepo.Name = Company.Name;
+            CompanyModelFromRepo.RepresentativeCount = Company.RepresentativeCount;
             _repositoryWrapper.Save();
             return Company;
         }

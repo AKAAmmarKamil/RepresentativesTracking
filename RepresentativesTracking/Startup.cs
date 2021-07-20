@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using RepresentativesTracking.Attachment;
 using Services;
 using System;
 using System.Text;
@@ -54,6 +55,7 @@ namespace RepresentativesTracking
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<IOrderService,OrderService>();
+            services.AddScoped<UploadImage, UploadImage>();
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
         }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

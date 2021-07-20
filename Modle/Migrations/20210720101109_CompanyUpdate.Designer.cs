@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Modle.Migrations
 {
     [DbContext(typeof(DBContext))]
-    [Migration("20210717112255_PriceAndCount")]
-    partial class PriceAndCount
+    [Migration("20210720101109_CompanyUpdate")]
+    partial class CompanyUpdate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -30,6 +30,9 @@ namespace Modle.Migrations
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RepresentativeCount")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 using RepresentativesTracking;
 using Modle.Model;
 using System.Linq;
+using Modle.Form;
+using RepresentativesTracking.Attachment;
+using System.IO;
 
 namespace Controllers
 {
@@ -21,16 +24,16 @@ namespace Controllers
         private readonly IOrderService _orderService;
         private readonly ICompanyService _companyService;
         private readonly IUserService _userService;
-
+        private readonly UploadImage _uploadImage;
         private readonly IMapper _mapper;
-        public OrderController(IMapper mapper, IOrderService orderService,IUserService userService,ICompanyService companyService)
+        public OrderController(IMapper mapper, IOrderService orderService,IUserService userService,ICompanyService companyService,UploadImage uploadImage)
         {
+            _uploadImage=uploadImage;
             _orderService = orderService;
             _userService = userService;
             _companyService = companyService;
             _mapper = mapper;
         }
-
         [HttpGet("{Id}", Name = "GetOrderById")]
         [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
         public async Task<ActionResult<OrderReadDto>> GetOrderById(int Id)
@@ -49,6 +52,22 @@ namespace Controllers
             var OrderModel = _mapper.Map<OrderReadDto>(result);
             OrderModel.User = UserReadDto;
             return Ok(OrderModel);
+        }
+        [HttpGet("{Id}")]
+        [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
+        public async Task<ActionResult<OrderReadDto>> GetImageOrder(int Id)
+        {
+            var result = await _orderService.FindById(Id);
+            var User = await _userService.FindById(result.UserID);
+            if (GetClaim("Role") != "Admin" || (GetClaim("Role") != "DeliveryAdmin" && GetClaim("CompanyID") != User.CompanyID.ToString()) || GetClaim("ID") != User.ID.ToString())
+            {
+                return BadRequest(new { Error = "لا يمكن تعديل بيانات تخص هذا الطلب من دون صلاحية المدير" });
+            }
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return File(await _uploadImage.Download(result.ReceiptImageUrl), "Application/Jpeg", new Guid().ToString());
         }
         [HttpGet]
         [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin+","+UserRole.Representative)]
@@ -146,7 +165,7 @@ namespace Controllers
         }
         [HttpPut("{id}")]
         [Authorize(Roles = UserRole.Admin  + "," + UserRole.Representative)]
-        public async Task<IActionResult> EndOrder(int Id, [FromBody] OrderEndDto OrderEndDto)
+        public async Task<IActionResult> EndOrder(int Id, [FromBody] AttachmentString attachment)
         {
             var OrderModelFromRepo = await _orderService.FindById(Id);
             if (GetClaim("Role") == "Representative" && GetClaim("CompanyID") != OrderModelFromRepo.User.CompanyID.ToString())
@@ -158,6 +177,20 @@ namespace Controllers
             {
                 return NotFound();
             }
+            if (attachment == null || attachment.Body == null || !UploadImage.IsBase64(attachment.Body))
+            {
+                return StatusCode(400, "المرفق غير صالح");
+            }
+
+            if (attachment.Body.Length * 3 / 4 > 250_000 * 4)
+            {
+                return StatusCode(413, " KB250 المرفق غير صالح أو حجم الصورة أكبر من");
+            }
+            var attachmentId = await _uploadImage.Upload(attachment.Body);
+            var OrderEndDto = new OrderEndDto
+            {
+                ReceiptImageUrl = attachmentId
+            };
             var OrderModel = _mapper.Map<Order>(OrderEndDto);
             await _orderService.EndModify(Id, OrderModel);
             return NoContent();

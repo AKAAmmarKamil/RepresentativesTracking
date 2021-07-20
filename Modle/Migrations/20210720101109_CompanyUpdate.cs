@@ -2,23 +2,23 @@
 
 namespace Modle.Migrations
 {
-    public partial class IsInProgress : Migration
+    public partial class CompanyUpdate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<bool>(
-                name: "ISInProgress",
-                table: "Order",
-                type: "bit",
+            migrationBuilder.AddColumn<int>(
+                name: "RepresentativeCount",
+                table: "Company",
+                type: "int",
                 nullable: false,
-                defaultValue: false);
+                defaultValue: 0);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "ISInProgress",
-                table: "Order");
+                name: "RepresentativeCount",
+                table: "Company");
         }
     }
 }

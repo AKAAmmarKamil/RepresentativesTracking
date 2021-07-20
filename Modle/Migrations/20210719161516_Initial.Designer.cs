@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Modle.Migrations
 {
     [DbContext(typeof(DBContext))]
-    [Migration("20210512152815_IsInProgress")]
-    partial class IsInProgress
+    [Migration("20210719161516_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -46,6 +46,9 @@ namespace Modle.Migrations
                     b.Property<DateTimeOffset>("AddOrderDate")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<int>("Count")
+                        .HasColumnType("int");
+
                     b.Property<DateTimeOffset?>("DeliveryOrderDate")
                         .HasColumnType("datetimeoffset");
 
@@ -60,6 +63,12 @@ namespace Modle.Migrations
 
                     b.Property<bool>("ISInProgress")
                         .HasColumnType("bit");
+
+                    b.Property<double?>("PriceInIQD")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("PriceInUSD")
+                        .HasColumnType("float");
 
                     b.Property<string>("ReceiptImageUrl")
                         .HasColumnType("nvarchar(max)");

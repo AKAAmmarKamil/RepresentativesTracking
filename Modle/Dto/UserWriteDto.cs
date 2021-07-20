@@ -32,6 +32,11 @@ namespace Dto
             var service = (DBContext)validationContext.GetService(typeof(DBContext));
             var EmailAddress = service.User.FirstOrDefault(x => x.Email == Email);
             var Company = service.Company.FirstOrDefault(x => x.Id == CompanyId);
+            var RepresentativeCount = service.User.Where(x => x.CompanyID == CompanyId).Count();
+            if (RepresentativeCount >= Company.RepresentativeCount)
+            {
+                yield return new ValidationResult("لقد بلغت الحد الأقصى من المندوبين لزيادة العدد يرجى الإتصال ب0782 192 2272");
+            }
             if (EmailAddress != null)
             {
                 yield return new ValidationResult("البريد الألكتروني غير صحيح");

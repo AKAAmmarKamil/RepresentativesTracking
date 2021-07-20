@@ -18,7 +18,7 @@ namespace Modle.Model
         public double EndLongitude { get; set; }
         public double EndLatitude { get; set; }
         public bool ISInProgress { get; set; }
-        public string? ReceiptImageUrl { get; set; }
+        public string ReceiptImageUrl { get; set; }
         public int UserID { get; set; }
         [ForeignKey("UserID")]
         public User User { get; set; }
