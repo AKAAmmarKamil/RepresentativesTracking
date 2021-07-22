@@ -1,6 +1,5 @@
 using Modle.Model;
 using RepresentativesTracking;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 namespace Services
@@ -8,8 +7,8 @@ namespace Services
     public interface ICompanyService : IBaseService<Company, int>
     {
         Task<IEnumerable<Company>> GetAll();
+        Task<Company> ModifyExchange(int id, Company Company);
     }
-
     public class CompanyService : ICompanyService
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
@@ -17,7 +16,6 @@ namespace Services
         {
             _repositoryWrapper = repositoryWrapper;
         }
-
         public Task<IEnumerable<Company>> All(int PageNumber, int Count)=>_repositoryWrapper.Company.FindAll(PageNumber, Count);
         public async Task<Company> Create(Company Company) => await
              _repositoryWrapper.Company.Create(Company);
@@ -41,6 +39,18 @@ namespace Services
             _repositoryWrapper.Save();
             return Company;
         }
-
+        public async Task<Company> ModifyExchange(int id, Company Company)
+        {
+            var CompanyModelFromRepo = await _repositoryWrapper.Company.FindById(id);
+            if (CompanyModelFromRepo == null)
+            {
+                return null;
+            }
+            CompanyModelFromRepo.ExchangeRate = Company.ExchangeRate;
+            CompanyModelFromRepo.IsAcceptAutomaticCurrencyExchange = Company.IsAcceptAutomaticCurrencyExchange;
+            _repositoryWrapper.Save();
+            return Company;
+        }
+      
     }
 }

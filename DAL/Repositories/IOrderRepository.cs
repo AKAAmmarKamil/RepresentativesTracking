@@ -41,7 +41,7 @@ namespace DAL.Services
                 return false;
             return true;
         }
-        public async Task<double?> GetOrderTotalInIQD(int OrderId)=> _db.Products.Where(x=>x.OrderID==OrderId).Select(x => x.PriceInIQD * x.Count).Sum();
-        public async Task<double?> GetOrderTotalInUSD(int OrderId)=> _db.Products.Where(x => x.OrderID == OrderId).Select(x => x.PriceInUSD * x.Count).Sum();
+        public async Task<double?> GetOrderTotalInIQD(int OrderId)=> _db.Products.Where(x=>x.OrderID==OrderId).Select(x => x.PriceInIQD * x.Quantity).Sum();
+        public async Task<double?> GetOrderTotalInUSD(int OrderId)=> _db.Products.Where(x => x.OrderID == OrderId).Select(x => x.PriceInUSD * x.Quantity).Sum();
     }
 }

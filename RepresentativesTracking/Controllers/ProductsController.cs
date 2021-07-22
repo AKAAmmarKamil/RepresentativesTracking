@@ -67,6 +67,10 @@ namespace Controllers
         [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
         public async Task<IActionResult> AddProduct([FromBody] ProductsWriteDto ProductsWriteDto)
         {
+            if (ProductsWriteDto.PriceInIQD == null)
+                 ProductsWriteDto.PriceInIQD = await _ProductsService.Convert(System.Convert.ToInt32(GetClaim("CompanyID")),ProductsWriteDto.PriceInUSD.GetValueOrDefault(),false);
+            if (ProductsWriteDto.PriceInUSD == null)
+                ProductsWriteDto.PriceInUSD = await _ProductsService.Convert(System.Convert.ToInt32(GetClaim("CompanyID")), ProductsWriteDto.PriceInIQD.GetValueOrDefault(), true);
             var ProductsModel = _mapper.Map<Products>(ProductsWriteDto);
             var Product=await _ProductsService.Create(ProductsModel);
             Product =await _ProductsService.FindById(Product.Id);
@@ -88,6 +92,10 @@ namespace Controllers
             {
                 return NotFound();
             }
+            if (ProductsWriteDto.PriceInIQD == null)
+                ProductsWriteDto.PriceInIQD = await _ProductsService.Convert(System.Convert.ToInt32(GetClaim("CompanyID")), ProductsWriteDto.PriceInUSD.GetValueOrDefault(), false);
+            if (ProductsWriteDto.PriceInUSD == null)
+                ProductsWriteDto.PriceInUSD = await _ProductsService.Convert(System.Convert.ToInt32(GetClaim("CompanyID")), ProductsWriteDto.PriceInIQD.GetValueOrDefault(), true);
             var ProductsModel = _mapper.Map<Products>(ProductsWriteDto);
             await _ProductsService.Modify(Id, ProductsModel);
             return NoContent();

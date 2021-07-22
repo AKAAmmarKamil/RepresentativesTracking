@@ -5,7 +5,7 @@ namespace Modle.Model
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public int Count { get; set; }
+        public int Quantity { get; set; }
         public double? PriceInIQD { get; set; }
         public double? PriceInUSD { get; set; }
         public int OrderID { get; set; }

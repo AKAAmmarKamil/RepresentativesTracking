@@ -13,6 +13,8 @@ namespace Profiles
             CreateMap<Company, CompanyWriteDto>();
             CreateMap<CompanyUpdateDto, Company>();
             CreateMap<Company, CompanyUpdateDto>();
+            CreateMap<CompanyUpdateExchangeDto, Company>();
+            CreateMap<Company, CompanyUpdateExchangeDto>();
         }
     }
 }

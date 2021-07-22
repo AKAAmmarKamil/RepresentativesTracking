@@ -1,12 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 namespace Dto
 {
-    public class CompanyUpdateDto
+    public class CompanyUpdateExchangeDto
     {
-        [Required(ErrorMessage = "لا يمكنك ترك هذا الحقل فارغاً")]
-        public string Name { get; set; }
-        [Required(ErrorMessage = "لا يمكنك ترك هذا الحقل فارغاً")]
-        public int RepresentativeCount { get; set; }
         [Required(ErrorMessage = "لا يمكنك ترك هذا الحقل فارغاً")]
         public double ExchangeRate { get; set; }
         [Required(ErrorMessage = "لا يمكنك ترك هذا الحقل فارغاً")]

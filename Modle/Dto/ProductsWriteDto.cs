@@ -9,7 +9,7 @@ namespace Dto
         [Required(ErrorMessage = "لا يمكنك ترك هذا الحقل فارغاً")]
         public string Name { get; set; }
         [Required(ErrorMessage = "لا يمكنك ترك هذا الحقل فارغاً")]
-        public int Count { get; set; }
+        public int Quantity { get; set; }
         public double? PriceInIQD { get; set; }
         public double? PriceInUSD { get; set; }
         [Required(ErrorMessage = "لا يمكنك ترك هذا الحقل فارغاً")]
@@ -21,6 +21,18 @@ namespace Dto
             if (User == null)
             {
                 yield return new ValidationResult("الطلب غير موجود");
+            }
+            if (Quantity <=0)
+            {
+                yield return new ValidationResult("يجب أن تكون الكمية أكبر من صفر");
+            }
+            if (PriceInIQD <= 0 || PriceInUSD <=0)
+            {
+                yield return new ValidationResult("يجب أن يكون السعر أكبر من صفر");
+            }
+            if (PriceInIQD ==null && PriceInUSD == null)
+            {
+                yield return new ValidationResult("لا يمكن إضافة منتج بدون سعر");
             }
         }
     }
