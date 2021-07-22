@@ -10,6 +10,7 @@ namespace DAL
 
         }
         public DbSet<Company> Company { get; set; }
+        public DbSet<Products> Products { get; set; }
         public DbSet<User> User { get; set; }
         public DbSet<Order> Order { get; set; }
         public DbSet<RepresentativeLocation> Location { get; set; }

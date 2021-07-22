@@ -13,6 +13,8 @@ namespace Services
         Task<Order> StartModify(int id, Order Order);
         Task<Order> EndModify(int id, Order Order);
         Task<Order> GetOrderInProgress(int User);
+        Task<double?> GetOrderTotalInIQD(int OrderId);
+        Task<double?> GetOrderTotalInUSD(int OrderId);
     }
 
     public class OrderService : IOrderService
@@ -24,6 +26,10 @@ namespace Services
         }
         public async Task<IEnumerable<Order>> GetOrderByUser(int User, int PageNumber, int Count) =>await 
             _repositoryWrapper.Order.GetOrderByUser(User, PageNumber, Count);
+        public async Task<double?> GetOrderTotalInIQD(int OrderId) => await
+           _repositoryWrapper.Order.GetOrderTotalInIQD(OrderId);
+        public async Task<double?> GetOrderTotalInUSD(int OrderId) => await
+           _repositoryWrapper.Order.GetOrderTotalInUSD(OrderId);
         public async Task<bool> IsLastOrderCompleted(int User) => await
            _repositoryWrapper.Order.IsLastOrderCompleted(User);
         public async Task<Order> Create(Order Order) => await
@@ -71,9 +77,6 @@ namespace Services
                 return null;
             }
             OrderModelFromRepo.Details = Order.Details;
-            OrderModelFromRepo.Count = Order.Count;
-            OrderModelFromRepo.PriceInIQD = Order.PriceInIQD;
-            OrderModelFromRepo.PriceInUSD = Order.PriceInUSD;
             OrderModelFromRepo.StartLongitude = Order.StartLongitude;
             OrderModelFromRepo.StartLatitude = Order.StartLatitude;
             OrderModelFromRepo.ReceiptImageUrl = Order.ReceiptImageUrl;

@@ -55,6 +55,7 @@ namespace RepresentativesTracking
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<IOrderService,OrderService>();
+            services.AddScoped<IProductsService, ProductsService>();
             services.AddScoped<UploadImage, UploadImage>();
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
         }

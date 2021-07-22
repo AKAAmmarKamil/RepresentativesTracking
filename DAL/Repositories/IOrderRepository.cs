@@ -13,6 +13,8 @@ namespace DAL.Services
     {
         Task<IEnumerable<Order>> GetAll();
         Task<IEnumerable<Order>> GetOrderByUser(int User,int PageNumber,int Count);
+        Task<double?> GetOrderTotalInIQD(int OrderId);
+        Task<double?> GetOrderTotalInUSD(int OrderId);
         Task<Order> GetOrderInProgress(int User);
         Task<bool> IsLastOrderCompleted(int User);
 
@@ -39,6 +41,7 @@ namespace DAL.Services
                 return false;
             return true;
         }
-
+        public async Task<double?> GetOrderTotalInIQD(int OrderId)=> _db.Products.Where(x=>x.OrderID==OrderId).Select(x => x.PriceInIQD * x.Count).Sum();
+        public async Task<double?> GetOrderTotalInUSD(int OrderId)=> _db.Products.Where(x => x.OrderID == OrderId).Select(x => x.PriceInUSD * x.Count).Sum();
     }
 }

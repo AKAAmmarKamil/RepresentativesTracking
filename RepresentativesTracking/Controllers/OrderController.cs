@@ -51,6 +51,8 @@ namespace Controllers
             }
             var OrderModel = _mapper.Map<OrderReadDto>(result);
             OrderModel.User = UserReadDto;
+            OrderModel.TotalPriceInIQD =await _orderService.GetOrderTotalInIQD(Id);
+            OrderModel.TotalPriceInUSD = await _orderService.GetOrderTotalInUSD(Id);
             return Ok(OrderModel);
         }
         [HttpGet("{Id}")]
@@ -84,6 +86,8 @@ namespace Controllers
                 UserReadDto = _mapper.Map<UserReadDto>(User);
                 OrderModel = _mapper.Map<List<OrderReadDto>>(result);
                 OrderModel[i].User = UserReadDto;
+                OrderModel[i].TotalPriceInIQD = await _orderService.GetOrderTotalInIQD(result[i].ID);
+                OrderModel[i].TotalPriceInUSD = await _orderService.GetOrderTotalInUSD(result[i].ID);
             }
             return Ok(OrderModel);
         }
@@ -101,6 +105,8 @@ namespace Controllers
                 UserReadDto = _mapper.Map<UserReadDto>(User);
                 OrderModel = _mapper.Map<List<OrderReadDto>>(result);
                 OrderModel[i].User = UserReadDto;
+                OrderModel[i].TotalPriceInIQD = await _orderService.GetOrderTotalInIQD(result[i].ID);
+                OrderModel[i].TotalPriceInUSD = await _orderService.GetOrderTotalInUSD(result[i].ID);
             }
             return Ok(OrderModel);
         }
@@ -116,6 +122,8 @@ namespace Controllers
             var UserReadDto = _mapper.Map<UserReadDto>(User);
             var OrderReadDto = _mapper.Map<OrderReadDto>(OrderModel);
             OrderReadDto.User = UserReadDto;
+            OrderReadDto.TotalPriceInIQD = 0;
+            OrderReadDto.TotalPriceInUSD = 0;
             return CreatedAtRoute("GetOrderById", new { Id = OrderReadDto.ID }, OrderReadDto);
         }
         [HttpPut("{id}")]
