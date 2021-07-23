@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Modle.Model;
 using RepresentativesTracking;
 using System;
@@ -15,14 +16,17 @@ namespace Services
         Task<Order> GetOrderInProgress(int User);
         Task<double?> GetOrderTotalInIQD(int OrderId);
         Task<double?> GetOrderTotalInUSD(int OrderId);
+        string GetURL(string Image);
     }
 
     public class OrderService : IOrderService
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
-        public OrderService(IRepositoryWrapper repositoryWrapper)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public OrderService(IRepositoryWrapper repositoryWrapper,IHttpContextAccessor httpContextAccessor)
         {
             _repositoryWrapper = repositoryWrapper;
+            _httpContextAccessor = httpContextAccessor;
         }
         public async Task<IEnumerable<Order>> GetOrderByUser(int User, int PageNumber, int Count) =>await 
             _repositoryWrapper.Order.GetOrderByUser(User, PageNumber, Count);
@@ -85,6 +89,18 @@ namespace Services
             OrderModelFromRepo.UserID = Order.UserID;
             _repositoryWrapper.Save();
             return Order;
+        }
+
+        public string GetURL(string Image)
+        {
+            string host = _httpContextAccessor.HttpContext.Request.Host.Value;
+            var IsHttps = _httpContextAccessor.HttpContext.Request.IsHttps;
+            var Http = "https://";
+            if (IsHttps==false)
+            {
+                Http = "http://";
+            }
+            return Http+host + "/Images/" + Image + ".jpeg";
         }
     }
 }

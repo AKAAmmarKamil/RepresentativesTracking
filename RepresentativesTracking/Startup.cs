@@ -57,6 +57,7 @@ namespace RepresentativesTracking
             services.AddScoped<IOrderService,OrderService>();
             services.AddScoped<IProductsService, ProductsService>();
             services.AddScoped<UploadImage, UploadImage>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
         }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

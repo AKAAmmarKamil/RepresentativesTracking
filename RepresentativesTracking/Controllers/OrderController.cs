@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Dto;
-using Model;
 using Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +11,9 @@ using Modle.Model;
 using System.Linq;
 using Modle.Form;
 using RepresentativesTracking.Attachment;
+using Microsoft.AspNetCore.Hosting;
 using System.IO;
+using Microsoft.AspNetCore.Http;
 
 namespace Controllers
 {
@@ -70,6 +71,22 @@ namespace Controllers
                 return NotFound();
             }
             return File(await _uploadImage.Download(result.ReceiptImageUrl), "Application/Jpeg", new Guid().ToString());
+        }
+        [HttpGet("{Id}")]
+        [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
+        public async Task<ActionResult<OrderReadDto>> GetImageUrl(int Id)
+        {
+            var result = await _orderService.FindById(Id);
+            var User = await _userService.FindById(result.UserID);
+            if (GetClaim("Role") != "Admin" || (GetClaim("Role") != "DeliveryAdmin" && GetClaim("CompanyID") != User.CompanyID.ToString()) || GetClaim("ID") != User.ID.ToString())
+            {
+                return BadRequest(new { Error = "لا يمكن تعديل بيانات تخص هذا الطلب من دون صلاحية المدير" });
+            }
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(new { URL = _orderService.GetURL(result.ReceiptImageUrl) }) ;
         }
         [HttpGet]
         [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin+","+UserRole.Representative)]

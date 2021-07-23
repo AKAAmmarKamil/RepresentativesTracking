@@ -108,13 +108,13 @@ namespace Controllers
         public async Task<ActionResult<UserReadDto>> GetUserById(int Id)
         {
             var User = await _userService.FindById(Id);
-            if (GetClaim("Role") != "Admin" || (GetClaim("Role")!= "DeliveryAdmin" && GetClaim("CompanyID") != User.CompanyID.ToString())|| GetClaim("ID")!=User.ID.ToString())
-            {
-                return BadRequest(new { Error = "لا يمكن تعديل بيانات تخص هذا المستخدم من دون صلاحية المدير" });
-            }
             if (User == null)
             {
                 return NotFound();
+            }
+            if (GetClaim("Role") != "Admin" || (GetClaim("Role")!= "DeliveryAdmin" && GetClaim("CompanyID") != User.CompanyID.ToString())|| GetClaim("ID")!=User.ID.ToString())
+            {
+                return BadRequest(new { Error = "لا يمكن تعديل بيانات تخص هذا المستخدم من دون صلاحية المدير" });
             }
             var UserModel = _mapper.Map<UserReadDto>(User);
             return Ok(UserModel);
