@@ -38,7 +38,7 @@ namespace Controllers
             ProductsModel.Order.TotalPriceInUSD = await _orderService.GetOrderTotalInUSD(ProductsModel.Order.ID);
             return Ok(ProductsModel);
         }
-        [HttpGet]
+        [HttpGet("{PageNumber}/{Count}")]
         [Authorize(Roles = UserRole.Admin)]
         public async Task<ActionResult<ProductsReadDto>> GetAllProducts(int PageNumber, int Count)
         {
@@ -55,7 +55,7 @@ namespace Controllers
             }
             return Ok(ProductsModel);
         }
-        [HttpGet]
+        [HttpGet("{OrderId}/{PageNumber}/{Count}")]
         [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin + "," + UserRole.Representative)]
         public async Task<ActionResult<ProductsByOrderReadDto>> GetAllProductsByOrder(int OrderId, int PageNumber, int Count)
         {

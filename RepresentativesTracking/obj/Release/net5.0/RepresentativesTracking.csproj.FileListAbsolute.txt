@@ -66,3 +66,5 @@ F:\RepresentativesTracking\RepresentativesTracking\obj\Release\net5.0\Representa
 F:\RepresentativesTracking\RepresentativesTracking\obj\Release\net5.0\ref\RepresentativesTracking.dll
 F:\RepresentativesTracking\RepresentativesTracking\obj\Release\net5.0\RepresentativesTracking.pdb
 F:\RepresentativesTracking\RepresentativesTracking\obj\Release\net5.0\RepresentativesTracking.genruntimeconfig.cache
+F:\RepresentativesTracking\RepresentativesTracking\bin\Release\net5.0\Newtonsoft.Json.dll
+F:\RepresentativesTracking\RepresentativesTracking\bin\Release\net5.0\RestSharp.dll

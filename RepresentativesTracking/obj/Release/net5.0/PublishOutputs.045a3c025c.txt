@@ -1,4 +1,5 @@
 F:\RepresentativesTracking\RepresentativesTracking\obj\Release\net5.0\PubTmp\Out\RepresentativesTracking.exe
+F:\RepresentativesTracking\RepresentativesTracking\obj\Release\net5.0\PubTmp\Out\wwwroot\Images\9fe1fe10-b4ca-48fd-8e08-7a07e4e203e9.jpeg
 F:\RepresentativesTracking\RepresentativesTracking\obj\Release\net5.0\PubTmp\Out\appsettings.Development.json
 F:\RepresentativesTracking\RepresentativesTracking\obj\Release\net5.0\PubTmp\Out\appsettings.json
 F:\RepresentativesTracking\RepresentativesTracking\obj\Release\net5.0\PubTmp\Out\RepresentativesTracking.dll
@@ -21,6 +22,8 @@ F:\RepresentativesTracking\RepresentativesTracking\obj\Release\net5.0\PubTmp\Out
 F:\RepresentativesTracking\RepresentativesTracking\obj\Release\net5.0\PubTmp\Out\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 F:\RepresentativesTracking\RepresentativesTracking\obj\Release\net5.0\PubTmp\Out\Microsoft.IdentityModel.Tokens.dll
 F:\RepresentativesTracking\RepresentativesTracking\obj\Release\net5.0\PubTmp\Out\Microsoft.OpenApi.dll
+F:\RepresentativesTracking\RepresentativesTracking\obj\Release\net5.0\PubTmp\Out\Newtonsoft.Json.dll
+F:\RepresentativesTracking\RepresentativesTracking\obj\Release\net5.0\PubTmp\Out\RestSharp.dll
 F:\RepresentativesTracking\RepresentativesTracking\obj\Release\net5.0\PubTmp\Out\Swashbuckle.AspNetCore.Swagger.dll
 F:\RepresentativesTracking\RepresentativesTracking\obj\Release\net5.0\PubTmp\Out\Swashbuckle.AspNetCore.SwaggerGen.dll
 F:\RepresentativesTracking\RepresentativesTracking\obj\Release\net5.0\PubTmp\Out\Swashbuckle.AspNetCore.SwaggerUI.dll

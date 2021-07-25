@@ -90,9 +90,10 @@ namespace Controllers
         }
         [HttpGet]
         [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin+","+UserRole.Representative)]
-        public async Task<ActionResult<OrderReadDto>> GetOrderByUser(int PageNumber,int Count)
+        public async Task<ActionResult<OrderReadDto>> GetOrderByUser([FromBody] OrderInfo OrderInfo)
         {
-            var result = _orderService.GetOrderByUser(Convert.ToInt32(GetClaim("ID")),PageNumber,Count).Result.ToList();
+            var result = _orderService.GetOrderByUser(Convert.ToInt32(GetClaim("ID")), OrderInfo.PageNumber, OrderInfo.Count).Result.ToList();
+            result =await _orderService.SortOrders(OrderInfo.Longitude,OrderInfo.Latitude,result);
             User User;
             UserReadDto UserReadDto;
             List<OrderReadDto> OrderModel=new List<OrderReadDto>();
@@ -113,6 +114,25 @@ namespace Controllers
         public async Task<ActionResult<OrderReadDto>> GetAllOrders()
         {
             var result = _orderService.GetAll().Result.ToList();
+            User User;
+            UserReadDto UserReadDto;
+            List<OrderReadDto> OrderModel = new List<OrderReadDto>();
+            for (int i = 0; i < result.Count; i++)
+            {
+                User = await _userService.FindById(result[i].UserID);
+                UserReadDto = _mapper.Map<UserReadDto>(User);
+                OrderModel = _mapper.Map<List<OrderReadDto>>(result);
+                OrderModel[i].User = UserReadDto;
+                OrderModel[i].TotalPriceInIQD = await _orderService.GetOrderTotalInIQD(result[i].ID);
+                OrderModel[i].TotalPriceInUSD = await _orderService.GetOrderTotalInUSD(result[i].ID);
+            }
+            return Ok(OrderModel);
+        }
+        [HttpGet("{PageNumber}/{Count}")]
+        [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
+        public async Task<ActionResult<OrderReadDto>> GetAllByCompany(int PageNumber,int Count)
+        {
+            var result = _orderService.GetAllByCompany(Convert.ToInt32(GetClaim("CompanyID")),PageNumber,Count).Result.ToList();
             User User;
             UserReadDto UserReadDto;
             List<OrderReadDto> OrderModel = new List<OrderReadDto>();

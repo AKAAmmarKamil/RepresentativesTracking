@@ -54,7 +54,7 @@ namespace Controllers
             var LocationModel = _mapper.Map<IList<LocationReadDto>>(result);
             return Ok(LocationModel);
         }
-        [HttpGet]
+        [HttpGet("{Start}/{End}")]
         [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
         public async Task<ActionResult<LocationReadDto>> GetAllBetweenTwoDates(DateTime Start,DateTime End)
         {

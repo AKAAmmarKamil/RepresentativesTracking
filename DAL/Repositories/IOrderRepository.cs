@@ -12,6 +12,7 @@ namespace DAL.Services
     public interface IOrderRepository : IBaseRepository<Order>
     {
         Task<IEnumerable<Order>> GetAll();
+        Task<IEnumerable<Order>> GetAllByCompany(int Id, int PageNumber, int Count);
         Task<IEnumerable<Order>> GetOrderByUser(int User,int PageNumber,int Count);
         Task<double?> GetOrderTotalInIQD(int OrderId);
         Task<double?> GetOrderTotalInUSD(int OrderId);
@@ -28,9 +29,10 @@ namespace DAL.Services
         }
 
         public async Task<IEnumerable<Order>> GetAll()=> await _db.Order.ToListAsync();
+        public async Task<IEnumerable<Order>> GetAllByCompany(int Id, int PageNumber, int Count) => await _db.Order.Include(x=>x.User).Where(x=>x.User.CompanyID==Id).Skip((PageNumber - 1) * Count).Take(Count).ToListAsync();
         public async Task<IEnumerable<Order>> FindById() => await _db.Order.Include(x=>x.User).ToListAsync();
 
-        public async Task<IEnumerable<Order>> GetOrderByUser(int User, int PageNumber, int Count) => await _db.Order.Where(x => x.UserID == User && x.ISInProgress == false && x.ReceiptImageUrl == null).Skip((PageNumber - 1) * Count).Take(Count).OrderBy(x=>x.AddOrderDate).ToListAsync();
+        public async Task<IEnumerable<Order>> GetOrderByUser(int User, int PageNumber, int Count) => await _db.Order.Where(x => x.UserID == User && x.ISInProgress == false && x.ReceiptImageUrl == null).Skip((PageNumber - 1) * Count).Take(Count).ToListAsync();
 
         public async Task<Order> GetOrderInProgress(int User) => await _db.Order.Where(x => x.UserID == User && x.ISInProgress == true).FirstOrDefaultAsync();
 
