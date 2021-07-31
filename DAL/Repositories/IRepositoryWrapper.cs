@@ -11,6 +11,8 @@ namespace RepresentativesTracking
         IUsersRepository User { get; }
         IOrderRepository Order { get; }
         ILocationRepository Location { get; }
+        ICustomerRepository Customer { get; }
+
         void Save();
     }
     public class RepositoryWrapper : IRepositoryWrapper
@@ -21,6 +23,8 @@ namespace RepresentativesTracking
         private IOrderRepository _order;
         private ILocationRepository _location;
         private IProductsRepository _products;
+        private ICustomerRepository _customer;
+        public ICustomerRepository Customer => _customer ??= new CustomerRepository(_repoContext);
         public ICompanyRepository Company => _company ??= new CompanyRepository(_repoContext);
         public IUsersRepository User => _user ??= new UserRepository(_repoContext);
         public IOrderRepository Order => _order ??= new OrderRepository(_repoContext);

@@ -16,5 +16,6 @@ namespace Dto
         public double EndLatitude { get; set; }
         public bool ISInProgress { get; set; }
         public UserReadDto User { get; set; }
+        public CustomerReadDto Customer { get; set; }
     }
 }

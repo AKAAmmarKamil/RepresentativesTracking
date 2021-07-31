@@ -14,5 +14,6 @@ namespace DAL
         public DbSet<User> User { get; set; }
         public DbSet<Order> Order { get; set; }
         public DbSet<RepresentativeLocation> Location { get; set; }
+        public DbSet<Customer> Customer { get; set; }
     }
 }

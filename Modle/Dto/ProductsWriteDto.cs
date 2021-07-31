@@ -17,8 +17,8 @@ namespace Dto
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             var service = (DBContext)validationContext.GetService(typeof(DBContext));
-            var User = service.Order.FirstOrDefault(x => x.ID == OrderID);
-            if (User == null)
+            var Order = service.Order.FirstOrDefault(x => x.ID == OrderID);
+            if (Order == null)
             {
                 yield return new ValidationResult("الطلب غير موجود");
             }

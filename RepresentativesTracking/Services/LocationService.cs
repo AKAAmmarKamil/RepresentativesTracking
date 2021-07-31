@@ -9,6 +9,7 @@ namespace Services
     {
         Task<IEnumerable<RepresentativeLocation>> GetAllByOrder(int User, int Order);
         Task<IEnumerable<RepresentativeLocation>> GetAllBetweenTwoDates(int User, DateTime Start, DateTime End);
+        Task<RepresentativeLocation> GetLastOfUser(int User);
     }
 
     public class LocationService : ILocationService
@@ -18,13 +19,12 @@ namespace Services
         {
             _repositoryWrapper = repositoryWrapper;
         }
-
         public Task<IEnumerable<RepresentativeLocation>> All(int PageNumber, int Count)=>_repositoryWrapper.Location.FindAll(PageNumber, Count);
+        public Task<RepresentativeLocation> GetLastOfUser(int User) => _repositoryWrapper.Location.GetLastOfUser(User);
         public async Task<RepresentativeLocation> Create(RepresentativeLocation Location) => await
              _repositoryWrapper.Location.Create(Location);
         public async Task<RepresentativeLocation> Delete(int id) => await
         _repositoryWrapper.Location.Delete(id);
-
         public async Task<RepresentativeLocation> FindById(int id) => await
         _repositoryWrapper.Location.FindById(id);
         public async Task<IEnumerable<RepresentativeLocation>> GetAllByOrder(int User, int Order) => await

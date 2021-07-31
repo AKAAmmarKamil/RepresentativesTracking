@@ -11,10 +11,6 @@ using Modle.Model;
 using System.Linq;
 using Modle.Form;
 using RepresentativesTracking.Attachment;
-using Microsoft.AspNetCore.Hosting;
-using System.IO;
-using Microsoft.AspNetCore.Http;
-
 namespace Controllers
 {
     [Route("api/[action]")]

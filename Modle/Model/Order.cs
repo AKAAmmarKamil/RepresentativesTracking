@@ -20,6 +20,9 @@ namespace Modle.Model
         public int UserID { get; set; }
         [ForeignKey("UserID")]
         public User User { get; set; }
+        public int CustomerID { get; set; }
+        [ForeignKey("CustomerID")]
+        public Customer Customer { get; set; }
         public virtual List<Products> Products { get; set; }
     }
 }

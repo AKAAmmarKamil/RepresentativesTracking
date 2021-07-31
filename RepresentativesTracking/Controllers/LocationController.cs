@@ -44,6 +44,22 @@ namespace Controllers
             var LocationModel = _mapper.Map<LocationReadDto>(result);
             return Ok(LocationModel);
         }
+        [HttpGet("{UserId}")]
+        [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
+        public async Task<ActionResult<LocationReadDto>> GetLastOfUser(int UserId)
+        {
+            var result = await _locationService.GetLastOfUser(UserId);
+            if (GetClaim("Role") != "Admin" || (GetClaim("Role") != "DeliveryAdmin" && GetClaim("CompanyID") != result.User.CompanyID.ToString()))
+            {
+                return BadRequest(new { Error = "لا يمكن تعديل بيانات تخص هذا الطلب من دون صلاحية المدير" });
+            }
+            if (result == null)
+            {
+                return NotFound();
+            }
+            var LocationModel = _mapper.Map<LocationReadDto>(result);
+            return Ok(LocationModel);
+        }
         [HttpGet]
         [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
         public async Task<ActionResult<LocationReadDto>> GetAllByOrder()

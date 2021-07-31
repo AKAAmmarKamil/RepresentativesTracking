@@ -11,6 +11,7 @@ namespace DAL.Services
     public interface ILocationRepository : IBaseRepository<RepresentativeLocation>
     {
         Task<IEnumerable<RepresentativeLocation>> GetAllByOrder(int User,int Order);
+        Task<RepresentativeLocation> GetLastOfUser(int User);
         Task<IEnumerable<RepresentativeLocation>> GetAllBetweenTwoDates(int User,DateTime Start, DateTime End);
     }
     public class LocationRepository : BaseRepository<RepresentativeLocation>, ILocationRepository
@@ -24,6 +25,7 @@ namespace DAL.Services
 
         public async Task<IEnumerable<RepresentativeLocation>> GetAllByOrder(int User,int Order)=> await _db.Location.Where(x=>x.UserID==User&&x.OrderID==Order).ToListAsync();
         public async Task<IEnumerable<RepresentativeLocation>> GetAllBetweenTwoDates(int User,DateTime Start, DateTime End) => await _db.Location.Where(x => x.UserID == User && x.LocationDate>= Start&&x.LocationDate<=End).ToListAsync();
+        public async Task<RepresentativeLocation> GetLastOfUser(int User) => await _db.Location.Where(x => x.UserID == User).OrderByDescending(x=>x.LocationDate).Take(1).FirstOrDefaultAsync();
 
     }
 }
