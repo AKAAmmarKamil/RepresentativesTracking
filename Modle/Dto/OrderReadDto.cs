@@ -14,8 +14,8 @@ namespace Dto
         public double? StartLatitude { get; set; }
         public double EndLongitude { get; set; }
         public double EndLatitude { get; set; }
-        public bool ISInProgress { get; set; }
+        public string Status { get; set; }
         public UserReadDto User { get; set; }
-        public CustomerReadDto Customer { get; set; }
+        public CustomerForOrderReadDto Customer { get; set; }
     }
 }

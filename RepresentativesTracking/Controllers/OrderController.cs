@@ -21,13 +21,15 @@ namespace Controllers
         private readonly IOrderService _orderService;
         private readonly ICompanyService _companyService;
         private readonly IUserService _userService;
+        private readonly ICustomerService _customerService;
         private readonly UploadImage _uploadImage;
         private readonly IMapper _mapper;
-        public OrderController(IMapper mapper, IOrderService orderService,IUserService userService,ICompanyService companyService,UploadImage uploadImage)
+        public OrderController(IMapper mapper, IOrderService orderService,IUserService userService,ICustomerService customerService,ICompanyService companyService,UploadImage uploadImage)
         {
             _uploadImage=uploadImage;
             _orderService = orderService;
             _userService = userService;
+            _customerService = customerService;
             _companyService = companyService;
             _mapper = mapper;
         }
@@ -126,9 +128,28 @@ namespace Controllers
         }
         [HttpGet("{PageNumber}/{Count}")]
         [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
-        public async Task<ActionResult<OrderReadDto>> GetAllByCompany(int PageNumber,int Count)
+        public async Task<ActionResult<OrderReadDto>> GetAllInCompany(int PageNumber,int Count)
         {
-            var result = _orderService.GetAllByCompany(Convert.ToInt32(GetClaim("CompanyID")),PageNumber,Count).Result.ToList();
+            var result = _orderService.GetAllInCompany(Convert.ToInt32(GetClaim("CompanyID")),PageNumber,Count).Result.ToList();
+            User User;
+            UserReadDto UserReadDto;
+            List<OrderReadDto> OrderModel = new List<OrderReadDto>();
+            for (int i = 0; i < result.Count; i++)
+            {
+                User = await _userService.FindById(result[i].UserID);
+                UserReadDto = _mapper.Map<UserReadDto>(User);
+                OrderModel = _mapper.Map<List<OrderReadDto>>(result);
+                OrderModel[i].User = UserReadDto;
+                OrderModel[i].TotalPriceInIQD = await _orderService.GetOrderTotalInIQD(result[i].ID);
+                OrderModel[i].TotalPriceInUSD = await _orderService.GetOrderTotalInUSD(result[i].ID);
+            }
+            return Ok(OrderModel);
+        }
+        [HttpGet("{Status}/{PageNumber}/{Count}")]
+        [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
+        public async Task<ActionResult<OrderReadDto>> GetAllInCompanyByStatus(int Status,int PageNumber, int Count)
+        {
+            var result = _orderService.GetAllInCompanyByStatus(Convert.ToInt32(GetClaim("CompanyID")),Status, PageNumber, Count).Result.ToList();
             User User;
             UserReadDto UserReadDto;
             List<OrderReadDto> OrderModel = new List<OrderReadDto>();
@@ -186,7 +207,7 @@ namespace Controllers
             {
                 return BadRequest(new { Error = "لا يمكنك إختيار طلب تابع لشركة أخرى" });
             }
-            if (Order.ISInProgress==false||Order.ReceiptImageUrl!=null)
+            if (Order.Status==0||Order.ReceiptImageUrl!=null)
             {
                 return BadRequest(new { Error = "لا يمكن إختيار طلب تم تسليمه مسبقاً" });
             }
@@ -206,34 +227,52 @@ namespace Controllers
         }
         [HttpPut("{id}")]
         [Authorize(Roles = UserRole.Admin  + "," + UserRole.Representative)]
-        public async Task<IActionResult> EndOrder(int Id, [FromBody] AttachmentString attachment)
+        public async Task<IActionResult> DeliveryOrder(int Id, [FromBody] AttachmentString attachment)
         {
             var OrderModelFromRepo = await _orderService.FindById(Id);
+            if (OrderModelFromRepo == null)
+            {
+                return NotFound();
+            }
             if (GetClaim("Role") == "Representative" && GetClaim("CompanyID") != OrderModelFromRepo.User.CompanyID.ToString())
             {
                 return BadRequest(new { Error = "لا يمكنك إختيار طلب تابع لشركة أخرى" });
             }
             OrderModelFromRepo.User = await _userService.FindById(OrderModelFromRepo.UserID);
-            if (OrderModelFromRepo == null)
-            {
-                return NotFound();
-            }
             if (attachment == null || attachment.Body == null || !UploadImage.IsBase64(attachment.Body))
             {
                 return StatusCode(400, "المرفق غير صالح");
             }
-
             if (attachment.Body.Length * 3 / 4 > 250_000 * 4)
             {
                 return StatusCode(413, " KB250 المرفق غير صالح أو حجم الصورة أكبر من");
             }
             var attachmentId = await _uploadImage.Upload(attachment.Body);
-            var OrderEndDto = new OrderEndDto
+            var OrderEndDto = new OrderDeliveryDto
             {
                 ReceiptImageUrl = attachmentId
             };
             var OrderModel = _mapper.Map<Order>(OrderEndDto);
-            await _orderService.EndModify(Id, OrderModel);
+            await _orderService.DeliveryModify(Id, OrderModel);
+            return NoContent();
+        }
+        [HttpPut("{id}")]
+        [Authorize(Roles = UserRole.Admin + "," + UserRole.Representative)]
+        public async Task<IActionResult> EndOrder(int Id,[FromBody] OrderEndDto OrderEndDto)
+        {
+            var OrderModelFromRepo = await _orderService.FindById(Id);
+            if (OrderModelFromRepo == null)
+            {
+                return NotFound();
+            }
+            if (GetClaim("Role") == "Representative" && GetClaim("CompanyID") != OrderModelFromRepo.User.CompanyID.ToString())
+            {
+                return BadRequest(new { Error = "لا يمكنك إختيار طلب تابع لشركة أخرى" });
+            }
+            OrderModelFromRepo.User = await _userService.FindById(OrderModelFromRepo.UserID);
+            OrderModelFromRepo.Customer = await _customerService.FindById(OrderModelFromRepo.CustomerID);
+            OrderModelFromRepo.Status = OrderEndDto.Status;
+            await _orderService.EndModify(Id, OrderModelFromRepo);
             return NoContent();
         }
         [HttpDelete("{id}")]

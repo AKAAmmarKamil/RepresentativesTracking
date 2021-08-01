@@ -10,10 +10,12 @@ namespace Services
     public interface IOrderService : IBaseService<Order, int>
     {
         Task<IEnumerable<Order>> GetAll();
-        Task<IEnumerable<Order>> GetAllByCompany(int Id, int PageNumber, int Count);
+        Task<IEnumerable<Order>> GetAllInCompany(int Id, int PageNumber, int Count);
+        Task<IEnumerable<Order>> GetAllInCompanyByStatus(int Id,int Status, int PageNumber, int Count);
         Task<IEnumerable<Order>> GetOrderByUser(int User, int PageNumber, int Count);
         Task<bool> IsLastOrderCompleted(int User);
         Task<Order> StartModify(int id, Order Order);
+        Task<Order> DeliveryModify(int id, Order Order);
         Task<Order> EndModify(int id, Order Order);
         Task<Order> GetOrderInProgress(int User);
         Task<double?> GetOrderTotalInIQD(int OrderId);
@@ -48,9 +50,9 @@ namespace Services
            _repositoryWrapper.Order.GetOrderInProgress(id);
             public async Task<IEnumerable<Order>> GetAll() => await _repositoryWrapper.Order.GetAll();
             public Task<IEnumerable<Order>> All(int PageNumber, int Count) => _repositoryWrapper.Order.FindAll(PageNumber, Count);
-            public Task<IEnumerable<Order>> GetAllByCompany(int Id,int PageNumber, int Count) => _repositoryWrapper.Order.GetAllByCompany(Id,PageNumber, Count);
-
-        public async Task<Order> StartModify(int id, Order Order)
+            public Task<IEnumerable<Order>> GetAllInCompany(int Id,int PageNumber, int Count) => _repositoryWrapper.Order.GetAllInCompany(Id,PageNumber, Count);
+            public Task<IEnumerable<Order>> GetAllInCompanyByStatus(int Id,int Status, int PageNumber, int Count) => _repositoryWrapper.Order.GetAllInCompanyByStatus(Id,Status, PageNumber, Count);
+            public async Task<Order> StartModify(int id, Order Order)
             {
                 var OrderModelFromRepo = await _repositoryWrapper.Order.FindById(id);
                 if (OrderModelFromRepo == null)
@@ -59,11 +61,11 @@ namespace Services
                 }
                 OrderModelFromRepo.StartLongitude = Order.StartLongitude;
                 OrderModelFromRepo.StartLatitude = Order.StartLatitude;
-                OrderModelFromRepo.ISInProgress = true;
+                OrderModelFromRepo.Status = 1;
                 _repositoryWrapper.Save();
                 return Order;
             }
-            public async Task<Order> EndModify(int id, Order Order)
+            public async Task<Order> DeliveryModify(int id, Order Order)
             {
                 var OrderModelFromRepo = await _repositoryWrapper.Order.FindById(id);
                 if (OrderModelFromRepo == null)
@@ -71,10 +73,22 @@ namespace Services
                     return null;
                 }
                 OrderModelFromRepo.ReceiptImageUrl = Order.ReceiptImageUrl;
-                OrderModelFromRepo.ISInProgress = false;
+                OrderModelFromRepo.Status = 0;
                 OrderModelFromRepo.DeliveryOrderDate = DateTime.Now;
                 _repositoryWrapper.Save();
                 return Order;
+            }
+            public async Task<Order> EndModify(int id, Order Order)
+            {
+            var OrderModelFromRepo = await _repositoryWrapper.Order.FindById(id);
+            if (OrderModelFromRepo == null)
+            {
+                return null;
+            }
+            OrderModelFromRepo.Status = Order.Status;
+            OrderModelFromRepo.DeliveryOrderDate = DateTime.Now;
+            _repositoryWrapper.Save();
+            return Order;
             }
             public async Task<Order> Modify(int id, Order Order)
             {

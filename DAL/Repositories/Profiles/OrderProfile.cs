@@ -9,7 +9,7 @@ namespace Profiles
         public OrderProfile()
         {
             //Source -> Target
-            CreateMap<Order, OrderReadDto>();
+            CreateMap<Order, OrderReadDto>().ForMember(x=>x.Status,opt=>opt.MapFrom(x=>Convert(x.Status)));
                 //.ForMember(x => x.TotalPriceInIQD, opt => opt.MapFrom(x => x.Products.Count*x.PriceInIQD))
                   //                          .ForMember(x => x.TotalPriceInUSD, opt => opt.MapFrom(x => x.Count * x.PriceInUSD));
 
@@ -19,8 +19,16 @@ namespace Profiles
             CreateMap<OrderStartDto, Order>();
             CreateMap<Order, OrderStartDto>();
 
-            CreateMap<OrderEndDto, Order>();
-            CreateMap<Order, OrderEndDto>();
+            CreateMap<OrderDeliveryDto, Order>();
+            CreateMap<Order, OrderDeliveryDto>();
+        }
+        public static string Convert(int Status)
+        {
+            if (Status == 0) return "في الإنتظار";
+            if (Status == 1) return "قيد التوصيل";
+            if (Status == 2) return "تم التوصيل";
+            if (Status == 3) return "مرجع";
+            return "";
         }
     }
 }
