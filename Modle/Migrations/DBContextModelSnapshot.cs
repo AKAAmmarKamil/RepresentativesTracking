@@ -21,10 +21,9 @@ namespace Modle.Migrations
 
             modelBuilder.Entity("Modle.Model.Company", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<double>("ExchangeRate")
                         .HasColumnType("float");
@@ -45,13 +44,12 @@ namespace Modle.Migrations
 
             modelBuilder.Entity("Modle.Model.Customer", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("CompanyID")
-                        .HasColumnType("int");
+                    b.Property<Guid>("CompanyID")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("FullName")
                         .HasColumnType("nvarchar(max)");
@@ -68,16 +66,15 @@ namespace Modle.Migrations
 
             modelBuilder.Entity("Modle.Model.Order", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset>("AddOrderDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<int>("CustomerID")
-                        .HasColumnType("int");
+                    b.Property<Guid>("CustomerID")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset?>("DeliveryOrderDate")
                         .HasColumnType("datetimeoffset");
@@ -103,8 +100,8 @@ namespace Modle.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserID")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserID")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("ID");
 
@@ -117,16 +114,15 @@ namespace Modle.Migrations
 
             modelBuilder.Entity("Modle.Model.Products", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("OrderID")
-                        .HasColumnType("int");
+                    b.Property<Guid>("OrderID")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<double?>("PriceInIQD")
                         .HasColumnType("float");
@@ -146,10 +142,9 @@ namespace Modle.Migrations
 
             modelBuilder.Entity("Modle.Model.RepresentativeLocation", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsOnline")
                         .HasColumnType("bit");
@@ -163,11 +158,11 @@ namespace Modle.Migrations
                     b.Property<double>("Longitude")
                         .HasColumnType("float");
 
-                    b.Property<int?>("OrderID")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("OrderID")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("UserID")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserID")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("ID");
 
@@ -180,16 +175,15 @@ namespace Modle.Migrations
 
             modelBuilder.Entity("Modle.Model.User", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("Activated")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("CompanyID")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("CompanyID")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
@@ -203,7 +197,7 @@ namespace Modle.Migrations
                     b.Property<string>("Role")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Type")
+                    b.Property<int?>("Type")
                         .HasColumnType("int");
 
                     b.Property<string>("UserName")

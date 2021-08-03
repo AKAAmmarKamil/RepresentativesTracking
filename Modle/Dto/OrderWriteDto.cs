@@ -15,9 +15,9 @@ namespace Dto
         [Required(ErrorMessage = "لا يمكنك ترك هذا الحقل فارغاً")]
         public double EndLatitude { get; set; }
         [Required(ErrorMessage = "لا يمكنك ترك هذا الحقل فارغاً")]
-        public int UserID { get; set; }
+        public Guid UserID { get; set; }
         [Required(ErrorMessage = "لا يمكنك ترك هذا الحقل فارغاً")]
-        public int CustomerID { get; set; }
+        public Guid CustomerID { get; set; }
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             var service = (DBContext)validationContext.GetService(typeof(DBContext));

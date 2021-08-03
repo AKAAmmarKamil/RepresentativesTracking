@@ -4,13 +4,15 @@ using DAL.Repositories;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using System;
+
 namespace DAL.Services
 {
-    public interface ICompanyRepository : IBaseRepository<Company>
+    public interface ICompanyRepository : IBaseRepository<Company,Guid>
     {
         Task<IEnumerable<Company>> GetAll();
     }
-    public class CompanyRepository : BaseRepository<Company>, ICompanyRepository
+    public class CompanyRepository : BaseRepository<Company,Guid>, ICompanyRepository
     {
         private readonly DBContext _db;
         public CompanyRepository(DBContext context) : base(context)

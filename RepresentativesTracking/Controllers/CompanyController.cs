@@ -24,7 +24,7 @@ namespace Controllers
         }
         [HttpGet("{Id}", Name = "GetCompanyById")]
         [Authorize(Roles = UserRole.Admin)]
-        public async Task<ActionResult<CompanyReadDto>> GetCompanyById(int Id)
+        public async Task<ActionResult<CompanyReadDto>> GetCompanyById(Guid Id)
         {
             var result = await _companyService.FindById(Id);
             if (result == null)
@@ -53,7 +53,7 @@ namespace Controllers
         }
         [HttpPut("{id}")]
         [Authorize(Roles = UserRole.Admin)]
-        public async Task<IActionResult> UpdateCompany(int Id, [FromBody] CompanyUpdateDto CompanyUpdateDto)
+        public async Task<IActionResult> UpdateCompany(Guid Id, [FromBody] CompanyUpdateDto CompanyUpdateDto)
         {
             var CompanyModelFromRepo = await _companyService.FindById(Id);
             if (CompanyModelFromRepo == null)
@@ -68,18 +68,18 @@ namespace Controllers
         [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
         public async Task<IActionResult> UpdateCompanyByDirector([FromBody] CompanyUpdateExchangeDto CompanyUpdateExchangeDto)
         {
-            var CompanyModelFromRepo = await _companyService.FindById(Convert.ToInt32(GetClaim("CompanyID")));
+            var CompanyModelFromRepo = await _companyService.FindById(Guid.Parse(GetClaim("CompanyID")));
             if (CompanyModelFromRepo == null)
             {
                 return NotFound();
             }
             var CompanyModel = _mapper.Map<Company>(CompanyUpdateExchangeDto);
-            await _companyService.ModifyExchange(Convert.ToInt32(GetClaim("CompanyID")), CompanyModel);
+            await _companyService.ModifyExchange(Guid.Parse(GetClaim("CompanyID")), CompanyModel);
             return NoContent();
         }
         [HttpDelete("{id}")]
         [Authorize(Roles = UserRole.Admin)]
-        public async Task<IActionResult> DeleteCompany(int Id)
+        public async Task<IActionResult> DeleteCompany(Guid Id)
         {
             var Company = await _companyService.Delete(Id);
             if (Company == null)

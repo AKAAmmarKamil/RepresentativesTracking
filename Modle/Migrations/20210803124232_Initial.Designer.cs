@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Modle.Migrations
 {
     [DbContext(typeof(DBContext))]
-    [Migration("20210720101109_CompanyUpdate")]
-    partial class CompanyUpdate
+    [Migration("20210803124232_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,10 +23,15 @@ namespace Modle.Migrations
 
             modelBuilder.Entity("Modle.Model.Company", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("ExchangeRate")
+                        .HasColumnType("float");
+
+                    b.Property<bool>("IsAcceptAutomaticCurrencyExchange")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -39,18 +44,39 @@ namespace Modle.Migrations
                     b.ToTable("Company");
                 });
 
+            modelBuilder.Entity("Modle.Model.Customer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CompanyID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("FullName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyID");
+
+                    b.ToTable("Customer");
+                });
+
             modelBuilder.Entity("Modle.Model.Order", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset>("AddOrderDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<int>("Count")
-                        .HasColumnType("int");
+                    b.Property<Guid>("CustomerID")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset?>("DeliveryOrderDate")
                         .HasColumnType("datetimeoffset");
@@ -64,15 +90,6 @@ namespace Modle.Migrations
                     b.Property<double>("EndLongitude")
                         .HasColumnType("float");
 
-                    b.Property<bool>("ISInProgress")
-                        .HasColumnType("bit");
-
-                    b.Property<double?>("PriceInIQD")
-                        .HasColumnType("float");
-
-                    b.Property<double?>("PriceInUSD")
-                        .HasColumnType("float");
-
                     b.Property<string>("ReceiptImageUrl")
                         .HasColumnType("nvarchar(max)");
 
@@ -82,22 +99,54 @@ namespace Modle.Migrations
                     b.Property<double?>("StartLongitude")
                         .HasColumnType("float");
 
-                    b.Property<int>("UserID")
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("UserID")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("ID");
+
+                    b.HasIndex("CustomerID");
 
                     b.HasIndex("UserID");
 
                     b.ToTable("Order");
                 });
 
+            modelBuilder.Entity("Modle.Model.Products", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("OrderID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double?>("PriceInIQD")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("PriceInUSD")
+                        .HasColumnType("float");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderID");
+
+                    b.ToTable("Products");
+                });
+
             modelBuilder.Entity("Modle.Model.RepresentativeLocation", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsOnline")
                         .HasColumnType("bit");
@@ -111,11 +160,11 @@ namespace Modle.Migrations
                     b.Property<double>("Longitude")
                         .HasColumnType("float");
 
-                    b.Property<int?>("OrderID")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("OrderID")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("UserID")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserID")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("ID");
 
@@ -128,16 +177,15 @@ namespace Modle.Migrations
 
             modelBuilder.Entity("Modle.Model.User", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("Activated")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("CompanyID")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("CompanyID")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
@@ -164,15 +212,45 @@ namespace Modle.Migrations
                     b.ToTable("User");
                 });
 
+            modelBuilder.Entity("Modle.Model.Customer", b =>
+                {
+                    b.HasOne("Modle.Model.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+                });
+
             modelBuilder.Entity("Modle.Model.Order", b =>
                 {
+                    b.HasOne("Modle.Model.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Modle.Model.User", "User")
                         .WithMany()
                         .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Customer");
+
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Modle.Model.Products", b =>
+                {
+                    b.HasOne("Modle.Model.Order", "Order")
+                        .WithMany("Products")
+                        .HasForeignKey("OrderID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("Modle.Model.RepresentativeLocation", b =>
@@ -199,6 +277,11 @@ namespace Modle.Migrations
                         .HasForeignKey("CompanyID");
 
                     b.Navigation("Company");
+                });
+
+            modelBuilder.Entity("Modle.Model.Order", b =>
+                {
+                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }

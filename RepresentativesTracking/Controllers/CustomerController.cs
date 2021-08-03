@@ -26,9 +26,9 @@ namespace Controllers
         }
         [HttpGet("{Id}", Name = "GetCustomerById")]
         [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
-        public async Task<ActionResult<CustomerReadDto>> GetCustomerById(int Id)
+        public async Task<ActionResult<CustomerReadDto>> GetCustomerById(Guid Id)
         {
-            var result = await _CustomerService.GetById(Id,Convert.ToInt32(GetClaim("CompanyID")));
+            var result = await _CustomerService.GetById(Id, Guid.Parse(GetClaim("CompanyID")));
             if (result == null)
             {
                 return NotFound();
@@ -50,7 +50,7 @@ namespace Controllers
         [Authorize(Roles = UserRole.Admin)]
         public async Task<ActionResult<CustomerReadDto>> GetCustomersByCompany(int PageNumber,int Count)
         {
-            var result = await _CustomerService.GetCustomersByCompany(Convert.ToInt32(GetClaim("CompanyID")),PageNumber,Count);
+            var result = await _CustomerService.GetCustomersByCompany(Guid.Parse(GetClaim("CompanyID")),PageNumber,Count);
             var CustomerModel = _mapper.Map<IList<CustomerReadDto>>(result);
             return Ok(CustomerModel);
         }
@@ -59,14 +59,14 @@ namespace Controllers
         public async Task<IActionResult> AddCustomer([FromBody] CustomerWriteDto CustomerWriteDto)
         {
             var CustomerModel = _mapper.Map<Customer>(CustomerWriteDto);
-            CustomerModel.Company =await _companyService.FindById(Convert.ToInt32(GetClaim("CompanyID")));
+            CustomerModel.Company =await _companyService.FindById(Guid.Parse(GetClaim("CompanyID")));
             await _CustomerService.Create(CustomerModel);
             var CustomerReadDto = _mapper.Map<CustomerReadDto>(CustomerModel);
             return CreatedAtRoute("GetCustomerById", new { Id = CustomerReadDto.Id }, CustomerReadDto);
         }
         [HttpPut("{id}")]
         [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
-        public async Task<IActionResult> UpdateCustomer(int Id, [FromBody] CustomerWriteDto CustomerWriteDto)
+        public async Task<IActionResult> UpdateCustomer(Guid Id, [FromBody] CustomerWriteDto CustomerWriteDto)
         {
             var CustomerModelFromRepo = await _CustomerService.FindById(Id);
             if (CustomerModelFromRepo == null)
@@ -81,7 +81,7 @@ namespace Controllers
         }
         [HttpDelete("{id}")]
         [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
-        public async Task<IActionResult> DeleteCustomer(int Id)
+        public async Task<IActionResult> DeleteCustomer(Guid Id)
         {
             var Customer = await _CustomerService.Delete(Id);
             if (Customer == null)

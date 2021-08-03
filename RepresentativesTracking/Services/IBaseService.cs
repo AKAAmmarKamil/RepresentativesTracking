@@ -8,6 +8,6 @@ namespace Services
         Task<T> Modify(TId id, T t);
         Task<T> Delete(TId id);
         Task<T> FindById(TId id);
-        Task<IEnumerable<T>> All(int PageNumber, int Count);
+        Task<IEnumerable<T>> All(int PageNumber,int Count);
     }
 }

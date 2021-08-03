@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using DAL;
+using System;
+
 namespace Dto
 {
 
@@ -25,8 +27,8 @@ namespace Dto
         [Required(ErrorMessage = "لا يمكنك ترك هذا الحقل فارغاً")]
         public string Role { get; set; }
         [Range(1, 3, ErrorMessage = "نوع المندوب يجب أن يكون بين 1 و 3")]
-        public int? Type { get; set; }
-        public int? CompanyId { get; set; }
+        public Guid? Type { get; set; }
+        public Guid? CompanyId { get; set; }
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             var service = (DBContext)validationContext.GetService(typeof(DBContext));

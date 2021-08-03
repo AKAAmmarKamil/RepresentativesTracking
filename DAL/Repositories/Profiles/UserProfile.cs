@@ -11,7 +11,7 @@ namespace Profiles
         {
             //Source -> Target
             CreateMap<User, UserReadDto>().ForMember(x=>x.CompanyName,opt=>opt.MapFrom(x=>x.Company.Name))
-                .ForMember(x=>x.Type,opt=>opt.MapFrom(x=>Converter(x.Type)));
+                .ForMember(x=>x.Type,opt=>opt.MapFrom(x=>Converter(x.Type.GetValueOrDefault())));
             CreateMap<UserWriteDto, User>();
             CreateMap<User, UserWriteDto>();
         }
@@ -19,7 +19,8 @@ namespace Profiles
         {
             if (Type == 1) return "تسليم";
             else if (Type == 2) return "إستلام";
-            else return "ترويج";
+            else if (Type == 3) return "ترويج";
+            else return "بدون نوع";
         }
     }
 }

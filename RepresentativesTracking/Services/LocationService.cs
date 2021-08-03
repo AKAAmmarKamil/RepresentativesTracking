@@ -5,11 +5,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 namespace Services
 {
-    public interface ILocationService : IBaseService<RepresentativeLocation, int>
+    public interface ILocationService : IBaseService<RepresentativeLocation, Guid>
     {
-        Task<IEnumerable<RepresentativeLocation>> GetAllByOrder(int User, int Order);
-        Task<IEnumerable<RepresentativeLocation>> GetAllBetweenTwoDates(int User, DateTime Start, DateTime End);
-        Task<RepresentativeLocation> GetLastOfUser(int User);
+        Task<IEnumerable<RepresentativeLocation>> GetAllByOrder(Guid User, Guid Order);
+        Task<IEnumerable<RepresentativeLocation>> GetAllBetweenTwoDates(Guid User, DateTime Start, DateTime End);
+        Task<RepresentativeLocation> GetLastOfUser(Guid User);
     }
 
     public class LocationService : ILocationService
@@ -19,19 +19,19 @@ namespace Services
         {
             _repositoryWrapper = repositoryWrapper;
         }
-        public Task<IEnumerable<RepresentativeLocation>> All(int PageNumber, int Count)=>_repositoryWrapper.Location.FindAll(PageNumber, Count);
-        public Task<RepresentativeLocation> GetLastOfUser(int User) => _repositoryWrapper.Location.GetLastOfUser(User);
+        public Task<IEnumerable<RepresentativeLocation>> All(int PageNumber,int Count)=>_repositoryWrapper.Location.FindAll(PageNumber, Count);
+        public Task<RepresentativeLocation> GetLastOfUser(Guid User) => _repositoryWrapper.Location.GetLastOfUser(User);
         public async Task<RepresentativeLocation> Create(RepresentativeLocation Location) => await
              _repositoryWrapper.Location.Create(Location);
-        public async Task<RepresentativeLocation> Delete(int id) => await
+        public async Task<RepresentativeLocation> Delete(Guid id) => await
         _repositoryWrapper.Location.Delete(id);
-        public async Task<RepresentativeLocation> FindById(int id) => await
+        public async Task<RepresentativeLocation> FindById(Guid id) => await
         _repositoryWrapper.Location.FindById(id);
-        public async Task<IEnumerable<RepresentativeLocation>> GetAllByOrder(int User, int Order) => await
+        public async Task<IEnumerable<RepresentativeLocation>> GetAllByOrder(Guid User, Guid Order) => await
         _repositoryWrapper.Location.GetAllByOrder(User,Order); 
-        public async Task<IEnumerable<RepresentativeLocation>> GetAllBetweenTwoDates(int User, DateTime Start, DateTime End) => await
+        public async Task<IEnumerable<RepresentativeLocation>> GetAllBetweenTwoDates(Guid User, DateTime Start, DateTime End) => await
          _repositoryWrapper.Location.GetAllBetweenTwoDates(User,Start,End);
-        public Task<RepresentativeLocation> Modify(int id, RepresentativeLocation t)
+        public Task<RepresentativeLocation> Modify(Guid id, RepresentativeLocation t)
         {
             throw new NotImplementedException();
         }

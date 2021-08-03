@@ -4,7 +4,7 @@ namespace Dto
 {
     public class OrderReadDto
     {
-        public int ID { get; set; }
+        public Guid ID { get; set; }
         public string Details { get; set; }
         public double? TotalPriceInIQD { get; set; }
         public double? TotalPriceInUSD { get; set; }

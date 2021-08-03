@@ -1,4 +1,5 @@
 ﻿using DAL;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace Dto
         [Required(ErrorMessage = "لا يمكنك ترك هذا الحقل فارغاً")]
         public string PhoneNumber { get; set; }
         [Required(ErrorMessage = "لا يمكنك ترك هذا الحقل فارغاً")]
-        public int Type { get; set; }
+        public Guid Type { get; set; }
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             var service = (DBContext)validationContext.GetService(typeof(DBContext));

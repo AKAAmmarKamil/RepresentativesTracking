@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using RepresentativesTracking;
 using Modle.Model;
+using System;
+
 namespace Controllers
 {
     [Route("api/[action]")]
@@ -26,7 +28,7 @@ namespace Controllers
         }
         [HttpGet("{Id}", Name = "GetProductsById")]
         [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin + "," + UserRole.Representative)]
-        public async Task<ActionResult<ProductsReadDto>> GetProductsById(int Id)
+        public async Task<ActionResult<ProductsReadDto>> GetProductsById(Guid Id)
         {
             var result = await _ProductsService.FindById(Id);
             if (result == null)
@@ -40,7 +42,7 @@ namespace Controllers
         }
         [HttpGet("{PageNumber}/{Count}")]
         [Authorize(Roles = UserRole.Admin)]
-        public async Task<ActionResult<ProductsReadDto>> GetAllProducts(int PageNumber, int Count)
+        public async Task<ActionResult<ProductsReadDto>> GetAllProducts(int PageNumber,int Count)
         {
             var result = await _ProductsService.GetAll(PageNumber, Count);
             var User = new User();
@@ -57,7 +59,7 @@ namespace Controllers
         }
         [HttpGet("{OrderId}/{PageNumber}/{Count}")]
         [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin + "," + UserRole.Representative)]
-        public async Task<ActionResult<ProductsByOrderReadDto>> GetAllProductsByOrder(int OrderId, int PageNumber, int Count)
+        public async Task<ActionResult<ProductsByOrderReadDto>> GetAllProductsByOrder(Guid OrderId, int PageNumber,int Count)
         {
             var result =await _ProductsService.GetAllByOrder(OrderId, PageNumber, Count);
             var ProductsModel = _mapper.Map<IList<ProductsByOrderReadDto>>(result);
@@ -68,9 +70,9 @@ namespace Controllers
         public async Task<IActionResult> AddProduct([FromBody] ProductsWriteDto ProductsWriteDto)
         {
             if (ProductsWriteDto.PriceInIQD == null)
-                 ProductsWriteDto.PriceInIQD = await _ProductsService.Convert(System.Convert.ToInt32(GetClaim("CompanyID")),ProductsWriteDto.PriceInUSD.GetValueOrDefault(),false);
+                 ProductsWriteDto.PriceInIQD = await _ProductsService.Convert(Guid.Parse(GetClaim("CompanyID")),ProductsWriteDto.PriceInUSD.GetValueOrDefault(),false);
             if (ProductsWriteDto.PriceInUSD == null)
-                ProductsWriteDto.PriceInUSD = await _ProductsService.Convert(System.Convert.ToInt32(GetClaim("CompanyID")), ProductsWriteDto.PriceInIQD.GetValueOrDefault(), true);
+                ProductsWriteDto.PriceInUSD = await _ProductsService.Convert(Guid.Parse(GetClaim("CompanyID")), ProductsWriteDto.PriceInIQD.GetValueOrDefault(), true);
             var ProductsModel = _mapper.Map<Products>(ProductsWriteDto);
             var Product=await _ProductsService.Create(ProductsModel);
             Product =await _ProductsService.FindById(Product.Id);
@@ -83,7 +85,7 @@ namespace Controllers
         }
         [HttpPut("{id}")]
         [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
-        public async Task<IActionResult> UpdateProduct(int Id, [FromBody] ProductsWriteDto ProductsWriteDto)
+        public async Task<IActionResult> UpdateProduct(Guid Id, [FromBody] ProductsWriteDto ProductsWriteDto)
         {
             var ProductsModelFromRepo = await _ProductsService.FindById(Id);
             if (GetClaim("Role") != "Admin" && ProductsModelFromRepo.Order.User.CompanyID.ToString() != GetClaim("CompanyID"))
@@ -93,16 +95,16 @@ namespace Controllers
                 return NotFound();
             }
             if (ProductsWriteDto.PriceInIQD == null)
-                ProductsWriteDto.PriceInIQD = await _ProductsService.Convert(System.Convert.ToInt32(GetClaim("CompanyID")), ProductsWriteDto.PriceInUSD.GetValueOrDefault(), false);
+                ProductsWriteDto.PriceInIQD = await _ProductsService.Convert(Guid.Parse(GetClaim("CompanyID")), ProductsWriteDto.PriceInUSD.GetValueOrDefault(), false);
             if (ProductsWriteDto.PriceInUSD == null)
-                ProductsWriteDto.PriceInUSD = await _ProductsService.Convert(System.Convert.ToInt32(GetClaim("CompanyID")), ProductsWriteDto.PriceInIQD.GetValueOrDefault(), true);
+                ProductsWriteDto.PriceInUSD = await _ProductsService.Convert(Guid.Parse(GetClaim("CompanyID")), ProductsWriteDto.PriceInIQD.GetValueOrDefault(), true);
             var ProductsModel = _mapper.Map<Products>(ProductsWriteDto);
             await _ProductsService.Modify(Id, ProductsModel);
             return NoContent();
         }
         [HttpDelete("{id}")]
         [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
-        public async Task<IActionResult> DeleteProduct(int Id)
+        public async Task<IActionResult> DeleteProduct(Guid Id)
         {
             var Product = await _ProductsService.FindById(Id);
             if (GetClaim("Role") != "Admin" && Product.Order.User.CompanyID.ToString() != GetClaim("CompanyID"))

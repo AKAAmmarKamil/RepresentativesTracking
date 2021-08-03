@@ -7,7 +7,7 @@ namespace Modle.Model
     public class Order
     {
         [Key]
-        public int ID { get; set; }
+        public Guid ID { get; set; }
         public string Details { get; set; }
         public DateTimeOffset AddOrderDate { get; set; }
         public DateTimeOffset? DeliveryOrderDate { get; set; }
@@ -17,10 +17,10 @@ namespace Modle.Model
         public double EndLatitude { get; set; }
         public int Status { get; set; }
         public string ReceiptImageUrl { get; set; }
-        public int UserID { get; set; }
+        public Guid UserID { get; set; }
         [ForeignKey("UserID")]
         public User User { get; set; }
-        public int CustomerID { get; set; }
+        public Guid CustomerID { get; set; }
         [ForeignKey("CustomerID")]
         public Customer Customer { get; set; }
         public virtual List<Products> Products { get; set; }

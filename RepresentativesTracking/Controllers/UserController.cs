@@ -105,7 +105,7 @@ namespace Controllers
         }
         [HttpGet("{Id}", Name = "GetUserById")]
         [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin + "," + UserRole.Representative)]
-        public async Task<ActionResult<UserReadDto>> GetUserById(int Id)
+        public async Task<ActionResult<UserReadDto>> GetUserById(Guid Id)
         {
             var User = await _userService.FindById(Id);
             if (User == null)
@@ -121,7 +121,7 @@ namespace Controllers
         }
         [HttpGet("{PageNumber}/{Count}")]
         [Authorize(Roles = UserRole.Admin)]
-        public async Task<ActionResult<UserReadDto>> GetAllUsers(int PageNumber, int Count)
+        public async Task<ActionResult<UserReadDto>> GetAllUsers(int PageNumber,int Count)
         {
             var Users = _userService.FindAll(PageNumber, Count).Result.ToList();
             var UserModel = _mapper.Map<List<UserReadDto>>(Users);
@@ -129,9 +129,9 @@ namespace Controllers
         }
         [HttpGet("{PageNumber}/{Count}")]
         [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
-        public async Task<ActionResult<UserReadDto>> GetUsersByCompany(int PageNumber, int Count)
+        public async Task<ActionResult<UserReadDto>> GetUsersByCompany(int PageNumber,int Count)
         {
-            var Users = _userService.GetUsersByCompany(Convert.ToInt32(GetClaim("CompanyID")),PageNumber, Count).Result.ToList();
+            var Users = _userService.GetUsersByCompany(Guid.Parse(GetClaim("CompanyID")),PageNumber, Count).Result.ToList();
             var UserModel = _mapper.Map<List<UserReadDto>>(Users);
             return Ok(UserModel);
         }
@@ -143,7 +143,7 @@ namespace Controllers
                 return BadRequest(new { Error = "معرف الشركة مطلوب" });
             if (GetClaim("Role") != "DeliveryAdmin")
             {
-                UserWriteDto.CompanyId = Convert.ToInt32(GetClaim("CompanyId"));
+                UserWriteDto.CompanyId = Guid.Parse(GetClaim("CompanyId"));
                 UserWriteDto.Role = "Representative";
             }
             UserWriteDto.Password = BCrypt.Net.BCrypt.HashPassword(UserWriteDto.Password);
@@ -174,7 +174,7 @@ namespace Controllers
         [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin + "," + UserRole.Representative)]
         public async Task<IActionResult> ChangePasswordByOld([FromBody] ChangePasswordFromOldForm ChangePasswordFromOldForm)
         {
-            var UserModelFromRepo = await _userService.FindById(Convert.ToInt32(GetClaim("ID")));
+            var UserModelFromRepo = await _userService.FindById(Guid.Parse(GetClaim("ID")));
             if (GetClaim("Role") != "Admin" && GetClaim("ID") != UserModelFromRepo.ID.ToString())
             {
                 return BadRequest(new { Error = "لا يمكن تعديل بيانات تخص مستخدم آخر من دون صلاحية المدير" });
@@ -189,7 +189,7 @@ namespace Controllers
             }
         [HttpPut("{id}")]
          [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
-        public async Task<IActionResult> UpdateUserByAdmin(int Id, [FromBody] UserUpdateByAdminDto UserUpdateByAdminDto)
+        public async Task<IActionResult> UpdateUserByAdmin(Guid Id, [FromBody] UserUpdateByAdminDto UserUpdateByAdminDto)
         {
             if (GetClaim("Role") != "Admin" && GetClaim("ID") != Id.ToString())
             {
@@ -206,7 +206,7 @@ namespace Controllers
         }
         [HttpPut("{id}")]
         [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin + "," + UserRole.Representative)]
-        public async Task<IActionResult> UpdateUser(int Id, [FromBody] UserUpdateDto UserUpdateDto)
+        public async Task<IActionResult> UpdateUser(Guid Id, [FromBody] UserUpdateDto UserUpdateDto)
         {
             if (GetClaim("Role") != "Admin" && GetClaim("ID") != Id.ToString())
             {
@@ -238,7 +238,7 @@ namespace Controllers
 
         [HttpDelete("{id}")]
         [Authorize(Roles = UserRole.Admin)]
-        public async Task<IActionResult> DeleteUser(int Id)
+        public async Task<IActionResult> DeleteUser(Guid Id)
         {
             var User = await _userService.Delete(Id);
             if (User == null)

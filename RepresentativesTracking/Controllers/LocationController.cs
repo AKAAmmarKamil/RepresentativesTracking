@@ -30,7 +30,7 @@ namespace Controllers
         }
         [HttpGet("{Id}", Name = "GetLocationById")]
         [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
-        public async Task<ActionResult<LocationReadDto>> GetLocationById(int Id)
+        public async Task<ActionResult<LocationReadDto>> GetLocationById(Guid Id)
         {
             var result = await _locationService.FindById(Id);
             if (GetClaim("Role") != "Admin" || (GetClaim("Role") != "DeliveryAdmin" && GetClaim("CompanyID") != result.User.CompanyID.ToString()))
@@ -46,7 +46,7 @@ namespace Controllers
         }
         [HttpGet("{UserId}")]
         [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
-        public async Task<ActionResult<LocationReadDto>> GetLastOfUser(int UserId)
+        public async Task<ActionResult<LocationReadDto>> GetLastOfUser(Guid UserId)
         {
             var result = await _locationService.GetLastOfUser(UserId);
             if (GetClaim("Role") != "Admin" || (GetClaim("Role") != "DeliveryAdmin" && GetClaim("CompanyID") != result.User.CompanyID.ToString()))
@@ -64,7 +64,7 @@ namespace Controllers
         [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
         public async Task<ActionResult<LocationReadDto>> GetAllByOrder()
         {
-            var User = Convert.ToInt32(GetClaim("ID"));
+            var User = Guid.Parse(GetClaim("ID"));
             var Order = _orderService.GetOrderInProgress(User).Result;
             var result = await _locationService.GetAllByOrder(User,Order.ID);
             var LocationModel = _mapper.Map<IList<LocationReadDto>>(result);
@@ -74,7 +74,7 @@ namespace Controllers
         [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
         public async Task<ActionResult<LocationReadDto>> GetAllBetweenTwoDates(DateTime Start,DateTime End)
         {
-            var User = Convert.ToInt32(GetClaim("ID"));
+            var User = Guid.Parse(GetClaim("ID"));
             var result = await _locationService.GetAllBetweenTwoDates(User, Start,End);
             var LocationModel = _mapper.Map<IList<LocationReadDto>>(result);
             return Ok(LocationModel);
@@ -83,7 +83,7 @@ namespace Controllers
         [Authorize(Roles = UserRole.Admin + "," + UserRole.Representative)]
         public async Task<IActionResult> AddLocation([FromBody] LocationWriteDto LocationWriteDto)
         {
-            var UserId = Convert.ToInt32(GetClaim("ID"));
+            var UserId = Guid.Parse(GetClaim("ID"));
             var User =await _userService.FindById(UserId);
             var Order = _orderService.GetOrderInProgress(UserId).Result;
             var LocationModel = _mapper.Map<RepresentativeLocation>(LocationWriteDto);
@@ -97,7 +97,7 @@ namespace Controllers
         [Authorize(Roles = UserRole.Admin + "," + UserRole.Representative)]
         public async Task<IActionResult> AddLocationOffline([FromBody] List<LocationOfflineWriteDto> LocationOfflineWriteDto)
         {
-            var UserId = Convert.ToInt32(GetClaim("ID"));
+            var UserId = Guid.Parse(GetClaim("ID"));
             var User = await _userService.FindById(UserId);
             var Order = _orderService.GetOrderInProgress(UserId).Result;
             var LocationModel = _mapper.Map<List<RepresentativeLocation>>(LocationOfflineWriteDto);
@@ -113,7 +113,7 @@ namespace Controllers
         }
         [HttpDelete("{id}")]
         [Authorize(Roles = UserRole.Admin)]
-        public async Task<IActionResult> DeleteLocation(int Id)
+        public async Task<IActionResult> DeleteLocation(Guid Id)
         {
             var Location = await _locationService.Delete(Id);
             if (Location == null)

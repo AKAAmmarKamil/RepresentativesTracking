@@ -7,19 +7,19 @@ using System.Linq;
 using System.Threading.Tasks;
 namespace Services
 {
-    public interface IOrderService : IBaseService<Order, int>
+    public interface IOrderService : IBaseService<Order, Guid>
     {
         Task<IEnumerable<Order>> GetAll();
-        Task<IEnumerable<Order>> GetAllInCompany(int Id, int PageNumber, int Count);
-        Task<IEnumerable<Order>> GetAllInCompanyByStatus(int Id,int Status, int PageNumber, int Count);
-        Task<IEnumerable<Order>> GetOrderByUser(int User, int PageNumber, int Count);
-        Task<bool> IsLastOrderCompleted(int User);
-        Task<Order> StartModify(int id, Order Order);
-        Task<Order> DeliveryModify(int id, Order Order);
-        Task<Order> EndModify(int id, Order Order);
-        Task<Order> GetOrderInProgress(int User);
-        Task<double?> GetOrderTotalInIQD(int OrderId);
-        Task<double?> GetOrderTotalInUSD(int OrderId);
+        Task<IEnumerable<Order>> GetAllInCompany(Guid Id, int PageNumber,int Count);
+        Task<IEnumerable<Order>> GetAllInCompanyByStatus(Guid Id,int Status, int PageNumber,int Count);
+        Task<IEnumerable<Order>> GetOrderByUser(Guid User, int PageNumber,int Count);
+        Task<bool> IsLastOrderCompleted(Guid User);
+        Task<Order> StartModify(Guid id, Order Order);
+        Task<Order> DeliveryModify(Guid id, Order Order);
+        Task<Order> EndModify(Guid id, Order Order);
+        Task<Order> GetOrderInProgress(Guid User);
+        Task<double?> GetOrderTotalInIQD(Guid OrderId);
+        Task<double?> GetOrderTotalInUSD(Guid OrderId);
         string GetURL(string Image);
         Task<List<Order>> SortOrders(double Longitude, double Latitude, List<Order> Destination);
     }
@@ -32,27 +32,27 @@ namespace Services
                 _repositoryWrapper = repositoryWrapper;
                 _httpContextAccessor = httpContextAccessor;
             }
-            public async Task<IEnumerable<Order>> GetOrderByUser(int User, int PageNumber, int Count) => await
+            public async Task<IEnumerable<Order>> GetOrderByUser(Guid User, int PageNumber,int Count) => await
                 _repositoryWrapper.Order.GetOrderByUser(User, PageNumber, Count);
-            public async Task<double?> GetOrderTotalInIQD(int OrderId) => await
+            public async Task<double?> GetOrderTotalInIQD(Guid OrderId) => await
                _repositoryWrapper.Order.GetOrderTotalInIQD(OrderId);
-            public async Task<double?> GetOrderTotalInUSD(int OrderId) => await
+            public async Task<double?> GetOrderTotalInUSD(Guid OrderId) => await
                _repositoryWrapper.Order.GetOrderTotalInUSD(OrderId);
-            public async Task<bool> IsLastOrderCompleted(int User) => await
+            public async Task<bool> IsLastOrderCompleted(Guid User) => await
                _repositoryWrapper.Order.IsLastOrderCompleted(User);
             public async Task<Order> Create(Order Order) => await
                  _repositoryWrapper.Order.Create(Order);
-            public async Task<Order> Delete(int id) => await
+            public async Task<Order> Delete(Guid id) => await
             _repositoryWrapper.Order.Delete(id);
-            public async Task<Order> FindById(int id) => await
+            public async Task<Order> FindById(Guid id) => await
             _repositoryWrapper.Order.FindById(id);
-            public async Task<Order> GetOrderInProgress(int id) => await
+            public async Task<Order> GetOrderInProgress(Guid id) => await
            _repositoryWrapper.Order.GetOrderInProgress(id);
             public async Task<IEnumerable<Order>> GetAll() => await _repositoryWrapper.Order.GetAll();
-            public Task<IEnumerable<Order>> All(int PageNumber, int Count) => _repositoryWrapper.Order.FindAll(PageNumber, Count);
-            public Task<IEnumerable<Order>> GetAllInCompany(int Id,int PageNumber, int Count) => _repositoryWrapper.Order.GetAllInCompany(Id,PageNumber, Count);
-            public Task<IEnumerable<Order>> GetAllInCompanyByStatus(int Id,int Status, int PageNumber, int Count) => _repositoryWrapper.Order.GetAllInCompanyByStatus(Id,Status, PageNumber, Count);
-            public async Task<Order> StartModify(int id, Order Order)
+            public Task<IEnumerable<Order>> All(int PageNumber,int Count) => _repositoryWrapper.Order.FindAll(PageNumber, Count);
+            public Task<IEnumerable<Order>> GetAllInCompany(Guid Id,int PageNumber,int Count) => _repositoryWrapper.Order.GetAllInCompany(Id,PageNumber, Count);
+            public Task<IEnumerable<Order>> GetAllInCompanyByStatus(Guid Id,int Status, int PageNumber,int Count) => _repositoryWrapper.Order.GetAllInCompanyByStatus(Id,Status, PageNumber, Count);
+            public async Task<Order> StartModify(Guid id, Order Order)
             {
                 var OrderModelFromRepo = await _repositoryWrapper.Order.FindById(id);
                 if (OrderModelFromRepo == null)
@@ -65,7 +65,7 @@ namespace Services
                 _repositoryWrapper.Save();
                 return Order;
             }
-            public async Task<Order> DeliveryModify(int id, Order Order)
+            public async Task<Order> DeliveryModify(Guid id, Order Order)
             {
                 var OrderModelFromRepo = await _repositoryWrapper.Order.FindById(id);
                 if (OrderModelFromRepo == null)
@@ -78,7 +78,7 @@ namespace Services
                 _repositoryWrapper.Save();
                 return Order;
             }
-            public async Task<Order> EndModify(int id, Order Order)
+            public async Task<Order> EndModify(Guid id, Order Order)
             {
             var OrderModelFromRepo = await _repositoryWrapper.Order.FindById(id);
             if (OrderModelFromRepo == null)
@@ -90,7 +90,7 @@ namespace Services
             _repositoryWrapper.Save();
             return Order;
             }
-            public async Task<Order> Modify(int id, Order Order)
+            public async Task<Order> Modify(Guid id, Order Order)
             {
                 var OrderModelFromRepo = await _repositoryWrapper.Order.FindById(id);
                 if (OrderModelFromRepo == null)

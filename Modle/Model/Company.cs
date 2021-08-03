@@ -1,10 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 namespace Modle.Model
 {
     public class Company
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public string Name { get; set; }
         public int RepresentativeCount { get; set; }
         public double ExchangeRate { get; set; }

@@ -7,13 +7,13 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 namespace Services
 {
-    public interface IProductsService : IBaseService<Products, int>
+    public interface IProductsService : IBaseService<Products, Guid>
     {
-        Task<List<Products>> GetAll(int PageNumber, int Count);
-        Task<Products> FindById(int Id);
-        Task<List<Products>> GetAllByOrder(int OrderId, int PageNumber, int Count);
+        Task<List<Products>> GetAll(int PageNumber,int Count);
+        Task<Products> FindById(Guid Id);
+        Task<List<Products>> GetAllByOrder(Guid OrderId, int PageNumber,int Count);
         double CurrencyConverting(double Amount, bool ToUSD);
-        Task<double> Convert(int CompantId, double Amount, bool ToUSD);
+        Task<double> Convert(Guid CompantId, double Amount, bool ToUSD);
     }
     public class ProductsService : IProductsService
     {
@@ -22,16 +22,16 @@ namespace Services
         {
             _repositoryWrapper = repositoryWrapper;
         }
-        public Task<IEnumerable<Products>> All(int PageNumber, int Count)=>_repositoryWrapper.Products.FindAll(PageNumber, Count);
+        public Task<IEnumerable<Products>> All(int PageNumber,int Count)=>_repositoryWrapper.Products.FindAll(PageNumber, Count);
         public async Task<Products> Create(Products Products) => await
              _repositoryWrapper.Products.Create(Products);
-        public async Task<Products> Delete(int id) => await
+        public async Task<Products> Delete(Guid id) => await
         _repositoryWrapper.Products.Delete(id);
-        public async Task<Products> FindById(int id) => await
+        public async Task<Products> FindById(Guid id) => await
         _repositoryWrapper.Products.FindById(id);
-        public async Task<List<Products>> GetAll(int PageNumber, int Count) =>await _repositoryWrapper.Products.GetAll(PageNumber,Count);
-        public async Task<List<Products>> GetAllByOrder(int OrderId, int PageNumber, int Count) => await _repositoryWrapper.Products.GetAllByOrder(OrderId,PageNumber,Count);
-        public async Task<Products> Modify(int id, Products Products)
+        public async Task<List<Products>> GetAll(int PageNumber,int Count) =>await _repositoryWrapper.Products.GetAll(PageNumber,Count);
+        public async Task<List<Products>> GetAllByOrder(Guid OrderId, int PageNumber,int Count) => await _repositoryWrapper.Products.GetAllByOrder(OrderId,PageNumber,Count);
+        public async Task<Products> Modify(Guid id, Products Products)
         {
             var ProductsModelFromRepo = await _repositoryWrapper.Products.FindById(id);
             if (ProductsModelFromRepo == null)
@@ -69,7 +69,7 @@ namespace Services
             }
             return Amount * Double.Parse(Currency);
         }
-        public async Task<double> Convert(int CompantId, double Amount, bool ToUSD)
+        public async Task<double> Convert(Guid CompantId, double Amount, bool ToUSD)
         {
             var company = await _repositoryWrapper.Company.FindById(CompantId);
             if (company.IsAcceptAutomaticCurrencyExchange)

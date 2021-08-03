@@ -35,7 +35,7 @@ namespace Controllers
         }
         [HttpGet("{Id}", Name = "GetOrderById")]
         [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
-        public async Task<ActionResult<OrderReadDto>> GetOrderById(int Id)
+        public async Task<ActionResult<OrderReadDto>> GetOrderById(Guid Id)
         {
             var result = await _orderService.FindById(Id);
             var User = await _userService.FindById(result.UserID);
@@ -56,7 +56,7 @@ namespace Controllers
         }
         [HttpGet("{Id}")]
         [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
-        public async Task<ActionResult<OrderReadDto>> GetImageOrder(int Id)
+        public async Task<ActionResult<OrderReadDto>> GetImageOrder(Guid Id)
         {
             var result = await _orderService.FindById(Id);
             var User = await _userService.FindById(result.UserID);
@@ -72,7 +72,7 @@ namespace Controllers
         }
         [HttpGet("{Id}")]
         [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
-        public async Task<ActionResult<OrderReadDto>> GetImageUrl(int Id)
+        public async Task<ActionResult<OrderReadDto>> GetImageUrl(Guid Id)
         {
             var result = await _orderService.FindById(Id);
             var User = await _userService.FindById(result.UserID);
@@ -90,7 +90,7 @@ namespace Controllers
         [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin+","+UserRole.Representative)]
         public async Task<ActionResult<OrderReadDto>> GetOrderByUser([FromBody] OrderInfo OrderInfo)
         {
-            var result = _orderService.GetOrderByUser(Convert.ToInt32(GetClaim("ID")), OrderInfo.PageNumber, OrderInfo.Count).Result.ToList();
+            var result = _orderService.GetOrderByUser(Guid.Parse(GetClaim("ID")), OrderInfo.PageNumber, OrderInfo.Count).Result.ToList();
             result =await _orderService.SortOrders(OrderInfo.Longitude,OrderInfo.Latitude,result);
             User User;
             UserReadDto UserReadDto;
@@ -130,7 +130,7 @@ namespace Controllers
         [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
         public async Task<ActionResult<OrderReadDto>> GetAllInCompany(int PageNumber,int Count)
         {
-            var result = _orderService.GetAllInCompany(Convert.ToInt32(GetClaim("CompanyID")),PageNumber,Count).Result.ToList();
+            var result = _orderService.GetAllInCompany(Guid.Parse(GetClaim("CompanyID")),PageNumber,Count).Result.ToList();
             User User;
             UserReadDto UserReadDto;
             List<OrderReadDto> OrderModel = new List<OrderReadDto>();
@@ -147,9 +147,9 @@ namespace Controllers
         }
         [HttpGet("{Status}/{PageNumber}/{Count}")]
         [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
-        public async Task<ActionResult<OrderReadDto>> GetAllInCompanyByStatus(int Status,int PageNumber, int Count)
+        public async Task<ActionResult<OrderReadDto>> GetAllInCompanyByStatus(int Status,int PageNumber,int Count)
         {
-            var result = _orderService.GetAllInCompanyByStatus(Convert.ToInt32(GetClaim("CompanyID")),Status, PageNumber, Count).Result.ToList();
+            var result = _orderService.GetAllInCompanyByStatus(Guid.Parse(GetClaim("CompanyID")),Status, PageNumber, Count).Result.ToList();
             User User;
             UserReadDto UserReadDto;
             List<OrderReadDto> OrderModel = new List<OrderReadDto>();
@@ -182,7 +182,7 @@ namespace Controllers
         }
         [HttpPut("{id}")]
         [Authorize(Roles = UserRole.Admin + "," + UserRole.DeliveryAdmin)]
-        public async Task<IActionResult> UpdateOrder(int Id, [FromBody] OrderWriteDto OrderWriteDto)
+        public async Task<IActionResult> UpdateOrder(Guid Id, [FromBody] OrderWriteDto OrderWriteDto)
         {
             var User = await _userService.FindById(OrderWriteDto.UserID);
             if (GetClaim("Role") == "DeliveryAdmin" && GetClaim("CompanyID") != User.CompanyID.ToString())
@@ -200,7 +200,7 @@ namespace Controllers
         }
         [HttpPut("{id}")]
         [Authorize(Roles = UserRole.Admin + "," + UserRole.Representative)]
-        public async Task<IActionResult> StartOrder(int Id, [FromBody] OrderStartDto OrderStartDto)
+        public async Task<IActionResult> StartOrder(Guid Id, [FromBody] OrderStartDto OrderStartDto)
         {
             var Order =await _orderService.FindById(Id);
             if (GetClaim("Role") == "Representative" && GetClaim("CompanyID") != Order.User.CompanyID.ToString())
@@ -211,7 +211,7 @@ namespace Controllers
             {
                 return BadRequest(new { Error = "لا يمكن إختيار طلب تم تسليمه مسبقاً" });
             }
-            if (await _orderService.IsLastOrderCompleted(Convert.ToInt32(GetClaim("ID")))==false)
+            if (await _orderService.IsLastOrderCompleted(Guid.Parse(GetClaim("ID")))==false)
             {
                 return BadRequest(new { Error = "عفواً عليك إنهاء الطلب الحالي أولاً" });
             }
@@ -227,7 +227,7 @@ namespace Controllers
         }
         [HttpPut("{id}")]
         [Authorize(Roles = UserRole.Admin  + "," + UserRole.Representative)]
-        public async Task<IActionResult> DeliveryOrder(int Id, [FromBody] AttachmentString attachment)
+        public async Task<IActionResult> DeliveryOrder(Guid Id, [FromBody] AttachmentString attachment)
         {
             var OrderModelFromRepo = await _orderService.FindById(Id);
             if (OrderModelFromRepo == null)
@@ -258,7 +258,7 @@ namespace Controllers
         }
         [HttpPut("{id}")]
         [Authorize(Roles = UserRole.Admin + "," + UserRole.Representative)]
-        public async Task<IActionResult> EndOrder(int Id,[FromBody] OrderEndDto OrderEndDto)
+        public async Task<IActionResult> EndOrder(Guid Id,[FromBody] OrderEndDto OrderEndDto)
         {
             var OrderModelFromRepo = await _orderService.FindById(Id);
             if (OrderModelFromRepo == null)
@@ -277,7 +277,7 @@ namespace Controllers
         }
         [HttpDelete("{id}")]
         [Authorize(Roles = UserRole.Admin)]
-        public async Task<IActionResult> DeleteOrder(int Id)
+        public async Task<IActionResult> DeleteOrder(Guid Id)
         {
             var Order = await _orderService.Delete(Id);
             if (Order == null)

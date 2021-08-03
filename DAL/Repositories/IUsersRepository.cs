@@ -12,14 +12,14 @@ using DAL;
 
 namespace Repository
 {
-    public interface IUsersRepository : IBaseRepository<User>
+    public interface IUsersRepository : IBaseRepository<User,Guid>
     {
         Task<User> Authintication(LoginForm login);
         Task<User> GetUserByEmail(string Email);
-        Task<IEnumerable<User>> GetUsersByCompany(int Id, int PageNumber, int Count);
+        Task<IEnumerable<User>> GetUsersByCompany(Guid Id, int PageNumber,int Count);
 
     }
-    public class UserRepository : BaseRepository<User>, IUsersRepository
+    public class UserRepository : BaseRepository<User,Guid>, IUsersRepository
     {
         private readonly DBContext _db;
         public UserRepository(DBContext context) : base(context)
@@ -39,7 +39,7 @@ namespace Repository
             }
             return result;
         }
-        public async Task<IEnumerable<User>> GetUsersByCompany(int Id, int PageNumber, int Count)
+        public async Task<IEnumerable<User>> GetUsersByCompany(Guid Id, int PageNumber, int Count)
         {
             var result = await _db.User.Where(x => x.CompanyID == Id).Skip((PageNumber - 1) * Count).Take(Count).ToListAsync();
             if (result == null)
@@ -49,7 +49,7 @@ namespace Repository
             return result;
         }
         public async Task<IEnumerable<User>> FindAll(int PageNumber,int Count) => await _db.User.Skip((PageNumber - 1) * Count).Take(Count).ToListAsync();
-        public async Task<User> FindById(int Id)
+        public async Task<User> FindById(Guid Id)
         {
             var result = await _db.User.Where(x => x.ID == Id).Include(x=>x.Company)
                  .FirstOrDefaultAsync();
